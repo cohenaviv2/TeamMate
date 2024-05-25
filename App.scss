@@ -1,0 +1,11 @@
+@import "./styles/variables.scss";
+
+.tabBar {
+  background-color: $primary;
+  height: 55px;
+  padding-bottom: 4px;
+}
+
+.tabBarLabel {
+  color: $text;
+}
