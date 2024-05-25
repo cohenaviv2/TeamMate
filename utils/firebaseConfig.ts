@@ -1,20 +1,29 @@
 import { initializeApp } from "firebase/app";
+import { getDatabase } from "firebase/database";
+import { getAuth } from "firebase/auth";
 
-const API_KEY = "AIzaSyC724SEEduQyjo8JEfU5RHqKci24zhxZ6A";
-const PROJECT_ID = "teammate-d711b";
-const DATABASE_NAME = "teammate-d711b-default-rtdb";
-const APP_ID = "491582130065";
+const apiKey = process.env.EXPO_PUBLIC_API_KEY;
+const projectId = process.env.EXPO_PUBLIC_PROJECT_ID;
+const databaseName = process.env.EXPO_PUBLIC_DATABASE_NAME;
+const appId = process.env.EXPO_PUBLIC_APP_ID;
 
 const firebaseConfig = {
-  apiKey: API_KEY,
-  authDomain: `${PROJECT_ID}.firebaseapp.com`,
-  databaseURL: `https://${DATABASE_NAME}.firebaseio.com`,
-  projectId: PROJECT_ID,
-  storageBucket: `${PROJECT_ID}.appspot.com`,
+  apiKey: apiKey,
+  authDomain: `${projectId}.firebaseapp.com`,
+  databaseURL: `https://${databaseName}.firebaseio.com`,
+  projectId: projectId,
+  storageBucket: `${projectId}.appspot.com`,
   messagingSenderId: "SENDER_ID",
-  appId: APP_ID,
+  appId: appId,
 };
 
 const firebase = initializeApp(firebaseConfig);
 
-export default firebase;
+const db = getDatabase(firebase);
+const auth = getAuth(firebase);
+
+export const Firebase = {
+  app:firebase,
+  db,
+  auth
+}

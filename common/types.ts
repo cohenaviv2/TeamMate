@@ -3,5 +3,5 @@ interface IUser {
     email:string;
     password:string;
     imageUrl:string
-    id:string;
+    id?:string;
 }
