@@ -29,7 +29,9 @@
 .loginButton {
   @extend .button;
   background-color: $primary;
-  min-width: 80%;
+  min-width: 85%;
+  height: 3.5rem;
+  padding: 8px;
   color: $text;
 }
 

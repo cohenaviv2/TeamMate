@@ -1,0 +1,74 @@
+@import "./../../styles/variables.scss";
+
+
+.box {
+    height: 50px;
+    width: 100%;
+    @extend .hbox;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.sportBox {
+    @extend .hbox;
+    gap: 0.5rem;
+    width: 10rem;
+    justify-content: center;
+    height: 100%;
+    background-color: $background;
+    border-radius: 16px;
+}
+
+.sportText {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.button {
+    padding: 16px;
+}
+
+.buttonIcon {
+    font-size: 18px;
+}
+
+.sportIcon {
+    font-size: 24px;
+}
+
+.basketballIcon {
+    @extend .sportIcon;
+    color: rgb(255, 123, 0);
+}
+.baseballIcon {
+    @extend .sportIcon;
+    color: rgb(235, 216, 179);
+}
+.tennisIcon {
+    @extend .sportIcon;
+    color: rgb(5, 207, 5);
+}
+.footballIcon {
+    @extend .sportIcon;
+    color: rgb(160, 91, 12);
+}
+.soccerIcon {
+    @extend .sportIcon;
+    color: rgb(53, 53, 53);
+}
+.hockeyIcon {
+    @extend .sportIcon;
+    color: rgb(154, 204, 207);
+}
+.volleyballIcon {
+    @extend .sportIcon;
+    color: rgb(230, 211, 106);
+}
+.golfIcon {
+    @extend .sportIcon;
+    color: rgb(180, 155, 155);
+}
+.bicycleIcon {
+    @extend .sportIcon;
+    color: rgb(120, 206, 255);
+}

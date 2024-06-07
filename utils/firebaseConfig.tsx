@@ -23,7 +23,7 @@ const db = getDatabase(firebase);
 const auth = getAuth(firebase);
 
 export const Firebase = {
-  app:firebase,
+  app: firebase,
   db,
-  auth
-}
+  auth,
+};

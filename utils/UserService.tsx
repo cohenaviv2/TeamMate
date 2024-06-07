@@ -1,9 +1,13 @@
 import { Firebase } from "./firebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { set, ref } from "firebase/database";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { set, ref, get, child, DataSnapshot } from "firebase/database";
+import { IUser } from "../common/types";
+import { FirebaseError } from "firebase/app";
 
 export const UserService = {
-  // Register a new user with email and password
   register: async (user: IUser): Promise<IUser | null> => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -17,25 +21,35 @@ export const UserService = {
       await set(ref(Firebase.db, `users/${user.id}`), user);
       return user;
     } catch (error) {
-      console.log(error);
-      return null;
+      throw error;
     }
   },
 
-  uploadImage: async (uri:string)  => {
+  loginWithEmail: async (
+    email: string,
+    password: string
+  ): Promise<IUser | null> => {
+    try {
+      const credentials = await signInWithEmailAndPassword(
+        Firebase.auth,
+        email,
+        password
+      );
+      const userRef = ref(Firebase.db, `users/${credentials.user.uid}`);
+      const snapshot: DataSnapshot = await get(child(userRef, "/"));
 
-  }
+      if (snapshot.exists()) {
+        const userData: IUser = snapshot.val();
+        return userData;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      throw error;
+    }
+  },
 
-  //   // Login with email and password
-  //   loginWithEmail: async (email: string, password: string) => {
-  //     try {
-  //       await firebase.auth().signInWithEmailAndPassword(email, password);
-  //       return { success: true };
-  //     } catch (error) {
-  //       return { success: false, error: error.message };
-  //     }
-  //   },
-
+  uploadImage: async (uri: string) => {},
   //   // Login with Google
   //   loginWithGoogle: async () => {
   //     try {

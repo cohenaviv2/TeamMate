@@ -8,7 +8,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import styles from "./App.scss";
 import { useState } from "react";
 import LoginScreen from "./screens/Login/Login";
-import RegisterScreen from "./screens/Register/Register";
+import { IUser } from "./common/types";
 
 const Tab = createBottomTabNavigator();
 
@@ -51,7 +51,7 @@ export default function App() {
         <Tab.Screen name="Upcoming" component={UpcomingScreen} />
         <Tab.Screen name="MyEvents" component={EventsScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
-      </Tab.Navigator> : <RegisterScreen />}
+      </Tab.Navigator> : <LoginScreen setAuthUser={setUser}/>}
     </NavigationContainer>
   );
 }
