@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { IUser } from "../../common/types";
 import Layout from "../../components/Layout/Layout";
 import styles from "./Signin.scss";
-import { UserService } from "../../utils/UserService";
+import { AuthService } from "../../utils/AuthService";
 import { FirebaseError } from "firebase/app";
 
 interface SigninProps {
@@ -31,7 +31,7 @@ export default function Signin({ setAuthUser, setShowScreen }: SigninProps) {
   async function handleSignin() {
     setLoading(true);
     try {
-      const user = await UserService.loginWithEmail(email, password);
+      const user = await AuthService.login(email, password);
       setAuthUser(user);
     } catch (error) {
       if (error instanceof FirebaseError) setError(error);
@@ -48,7 +48,7 @@ export default function Signin({ setAuthUser, setShowScreen }: SigninProps) {
 
   return (
     <Layout>
-      <Text style={styles.title}>Signin</Text>
+      <Text style={styles.title}>Sign In</Text>
       <View style={styles.signinBox}>
         <TextInput
           style={styles.input}

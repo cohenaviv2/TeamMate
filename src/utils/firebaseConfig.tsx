@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
-import { getAuth } from "firebase/auth";
+import { initializeAuth, getReactNativePersistence } from "firebase/auth";
+import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
 const apiKey = process.env.EXPO_PUBLIC_API_KEY;
 const projectId = process.env.EXPO_PUBLIC_PROJECT_ID;
@@ -10,20 +11,22 @@ const appId = process.env.EXPO_PUBLIC_APP_ID;
 const firebaseConfig = {
   apiKey: apiKey,
   authDomain: `${projectId}.firebaseapp.com`,
-  databaseURL: `https://${databaseName}.firebaseio.com`,
   projectId: projectId,
+  databaseURL: `https://${databaseName}.firebaseio.com`,
   storageBucket: `${projectId}.appspot.com`,
   messagingSenderId: "SENDER_ID",
   appId: appId,
 };
 
-const firebase = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = initializeAuth(app, {
+  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+});
 
-const db = getDatabase(firebase);
-const auth = getAuth(firebase);
 
 export const Firebase = {
-  app: firebase,
+  app,
   db,
   auth,
 };
