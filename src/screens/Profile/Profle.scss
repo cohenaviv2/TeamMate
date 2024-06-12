@@ -1,0 +1,20 @@
+@import "../../styles/variables.scss";
+
+.profileBox {
+    @extend .screen;
+    width: 100%;
+    gap: 1rem;
+}
+
+.logoutButton {
+    @extend .button;
+    background-color: rgb(223, 7, 7);
+    width: 60%;
+    padding: 12px;
+    // margin-top: auto;
+}
+
+.logoutText {
+    color: $text;
+    font-size: 18px;
+}

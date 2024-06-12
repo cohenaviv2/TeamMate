@@ -1,74 +1,73 @@
 @import "./../../styles/variables.scss";
 
-
 .box {
-    height: 50px;
-    width: 100%;
-    @extend .hbox;
-    justify-content: center;
-    gap: 0.5rem;
+  height: 50px;
+  width: 100%;
+  @extend .hbox;
+  justify-content: center;
 }
 
 .sportBox {
-    @extend .hbox;
-    gap: 0.5rem;
-    width: 10rem;
-    justify-content: center;
-    height: 100%;
-    background-color: $background;
-    border-radius: 16px;
+  @extend .hbox;
+  gap: 0.5rem;
+  width: 10rem;
+  justify-content: center;
+  height: 100%;
+  background-color: $primary-dark;
+  border-radius: 16px;
 }
 
 .sportText {
-    font-size: 18px;
-    font-weight: bold;
+  font-size: 18px;
+  color: $text;
 }
 
 .button {
-    padding: 16px;
+  padding: 16px;
 }
 
 .buttonIcon {
-    font-size: 18px;
+  font-size: 18px;
+  color: $text;
 }
 
 .sportIcon {
-    font-size: 24px;
+  font-size: 24px;
 }
 
 .basketballIcon {
-    @extend .sportIcon;
-    color: rgb(255, 123, 0);
+  @extend .sportIcon;
+  color: rgb(226, 109, 0);
 }
 .baseballIcon {
-    @extend .sportIcon;
-    color: rgb(235, 216, 179);
+  @extend .sportIcon;
+  color: rgb(235, 216, 179);
 }
 .tennisIcon {
-    @extend .sportIcon;
-    color: rgb(5, 207, 5);
+  @extend .sportIcon;
+  color: rgb(19, 235, 19);
 }
 .footballIcon {
-    @extend .sportIcon;
-    color: rgb(160, 91, 12);
+  @extend .sportIcon;
+  color: rgb(160, 91, 12);
 }
 .soccerIcon {
-    @extend .sportIcon;
-    color: rgb(53, 53, 53);
+  @extend .sportIcon;
+  color: rgb(53, 53, 53);
 }
 .hockeyIcon {
-    @extend .sportIcon;
-    color: rgb(154, 204, 207);
+  @extend .sportIcon;
+  color: rgb(154, 204, 207);
 }
 .volleyballIcon {
-    @extend .sportIcon;
-    color: rgb(230, 211, 106);
+  @extend .sportIcon;
+  color: rgb(173, 157, 67);
 }
 .golfIcon {
-    @extend .sportIcon;
-    color: rgb(180, 155, 155);
+  @extend .sportIcon;
+  color: rgb(255, 255, 255);
 }
 .bicycleIcon {
-    @extend .sportIcon;
-    color: rgb(120, 206, 255);
+  @extend .sportIcon;
+  color: rgb(120, 206, 255);
 }

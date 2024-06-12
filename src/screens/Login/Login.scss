@@ -1,5 +1,4 @@
 @import "../../styles/variables.scss";
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
 
 .loginLayout {
@@ -11,9 +10,8 @@
 
 .logoBox {
   width: 90%;
-  // margin-top: 1rem;
-  // margin-bottom: 4rem;
-  @extend .vbox;
+  justify-content: center;
+  align-items: center;
   gap: 0.5rem;
 }
 
@@ -40,6 +38,7 @@
 
 .loginBox {
   @extend .vbox;
+  margin-top: -2rem;
   gap: 1.2rem;
   padding: 40px 32px;
   // border: 2px solid $background;
@@ -49,9 +48,8 @@
 }
 
 .input {
-  width: 100%;
+  min-width: 100%;
   border-width: 1px;
-  border: none;
   background-color: white;
   border: 2px solid $background;
   border-radius: 8px;

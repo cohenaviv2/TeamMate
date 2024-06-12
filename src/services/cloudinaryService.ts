@@ -10,13 +10,10 @@ const cloudinary = new Cloudinary({
 });
 
 async function uploadImage(imageUri: string, name: string): Promise<string> {
-  const file = {
-    uri: imageUri,
-    type: "image",
-    name,
-  };
+  const file = imageUri;
   const options = {
     upload_preset: uploadPreset,
+    unsigned: true,
   };
   return new Promise((resolve, reject) => {
     upload(cloudinary, {
@@ -24,7 +21,8 @@ async function uploadImage(imageUri: string, name: string): Promise<string> {
       options,
       callback: (error: any, response: any) => {
         if (error) {
-          reject(new Error(error.message));
+          console.log("Cloudinary error: ", error);
+          reject(new Error(error));
         } else {
           resolve(response.secure_url);
         }

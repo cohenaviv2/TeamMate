@@ -11,9 +11,11 @@ export const AuthService = {
       if (!uid) throw new Error("User not authenticated");
       // create new user in db
       user.id = uid;
+      user.password = "";
       await set(ref(Firebase.db, `users/${user.id}`), user);
       return user;
     } catch (error) {
+      console.log(error);
       throw error;
     }
   },

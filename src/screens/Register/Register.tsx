@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import { Text, TextInput, Image, TouchableOpacity, View, Alert } from "react-native";
+import { Text, TextInput, Image, TouchableOpacity, View, Alert, KeyboardAvoidingView } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { AuthService } from "../../utils/AuthService";
-import Layout from "../../components/Layout/Layout";
-import { FirebaseError } from "firebase/app";
+import { AuthService } from "../../services/AuthService";
 import styles from "./Register.scss";
 import Spinner from "../../components/Spinner/Spinner";
 import SportSelect from "../../components/SportSelect/SportSelect";
 import { IUser, SportType, sportTypeList } from "../../common/types";
-import { uploadImage } from "../../utils/cloudinaryService";
+import { uploadImage } from "../../services/cloudinaryService";
+import Octicons from '@expo/vector-icons/Octicons';
 
 export default function RegisterScreen({ navigation }: { navigation: any }) {
   const [user, setUser] = useState<IUser>({
@@ -40,7 +39,6 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
       });
       navigation.navigate("Login");
     } catch (error) {
-      console.log(error);
       Alert.alert("Registration failed");
     } finally {
       setLoading(false);
@@ -55,7 +53,7 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
     }
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
-      aspect: [4, 3],
+      aspect: [4, 4],
       base64: true,
     });
     if (pickerResult.canceled) return;
@@ -70,27 +68,25 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
   return (
     <>
       {loading ? (
-        <Spinner />
+        <Spinner size="l" />
       ) : (
-        <>
-          <View style={styles.container}>
-            <Text style={styles.title}>Register</Text>
-            <View style={styles.formBox}>
-              <View style={styles.imageBox}>{user.imageUrl != "" && <Image source={{ uri: user.imageUrl }} style={styles.image} />}</View>
-              <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker}>
-                <Text>Choose image</Text>
-              </TouchableOpacity>
-              <TextInput style={styles.input} placeholder="Full Name" value={user.fullName} onChangeText={(val) => setUser({ ...user, fullName: val })} />
-              <TextInput style={styles.input} placeholder="Email" value={user.email} onChangeText={(val) => setUser({ ...user, email: val })} keyboardType="email-address" />
-              <TextInput style={styles.input} placeholder="Password" value={user.password} onChangeText={(val) => setUser({ ...user, password: val })} secureTextEntry />
-              <Text>Your Favorite Sport</Text>
-              <SportSelect onChange={handleSportTypeChange} />
-              <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-                <Text style={{ fontSize: 20 }}>Register</Text>
-              </TouchableOpacity>
-            </View>
+        <KeyboardAvoidingView style={styles.registerBox} behavior="height">
+          <View style={styles.formBox}>
+            <View style={styles.imageBox}>{imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}</View>
+            <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker}>
+              <Octicons name="image" style={styles.imgIcon} />
+              <Text style={styles.imgBtnText}>Choose image</Text>
+            </TouchableOpacity>
+            <TextInput style={styles.input} placeholder="Full Name" value={user.fullName} onChangeText={(val) => setUser({ ...user, fullName: val })} />
+            <TextInput style={styles.input} placeholder="Email" value={user.email} onChangeText={(val) => setUser({ ...user, email: val })} keyboardType="email-address" />
+            <TextInput style={styles.input} placeholder="Password" value={user.password} onChangeText={(val) => setUser({ ...user, password: val })} secureTextEntry />
+            <Text style={styles.favText}>Your Favorite Sport</Text>
+            <SportSelect onChange={handleSportTypeChange} />
+            <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+              <Text style={{ fontSize: 20 }}>Register</Text>
+            </TouchableOpacity>
           </View>
-        </>
+        </KeyboardAvoidingView>
       )}
     </>
   );

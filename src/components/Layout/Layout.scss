@@ -1,12 +1,15 @@
 @import "./../../styles/variables.scss";
 
 .layout {
-  @extend .screen;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  background-color: $background;
 }
 
 .logoHeader {
   @extend .hbox;
-  justify-content: start;
+  justify-content: center;
   background-color: $primary;
   height: 80px;
   width: 100%;
@@ -20,4 +23,18 @@
   width: 200px;
   height: 50px;
   margin-top: 30px;
+  margin-right: auto;
+}
+
+.userImageBox {
+}
+
+.userImage {
+  width: 40px;
+  height: 40px;
+  margin-top: 30px;
+  margin-right: 1rem;
+  border-radius: 50px;
+  border: 2px solid $secondary;
+  margin-left: auto;
 }
