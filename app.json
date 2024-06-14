@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "team-mate",
-    "slug": "team-mate",
+    "slug": "TeamMate",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./src/assets/icon.png",
@@ -15,7 +15,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": ""
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +27,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyCHC7V863_hb4WKwirmSdtOqqMjMAnDTaI"
+          "apiKey": ""
         }
       }
     },

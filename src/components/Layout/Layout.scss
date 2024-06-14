@@ -11,30 +11,30 @@
   @extend .hbox;
   justify-content: center;
   background-color: $primary;
+  border-bottom-color: $primary-dark;
+  border-bottom-width: 2px;
   height: 80px;
   width: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1000;
+  // position: absolute;
+  // top: 0;
+  // left: 0;
+  // z-index: 1000;
 }
 
 .logo {
-  width: 200px;
-  height: 50px;
+  width: 45%; 
+  height: 45%;
+  margin-left: 0.5rem;
   margin-top: 30px;
   margin-right: auto;
 }
 
-.userImageBox {
-}
-
 .userImage {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   margin-top: 30px;
   margin-right: 1rem;
   border-radius: 50px;
-  border: 2px solid $secondary;
+  // border: 2px solid $primary-dark;
   margin-left: auto;
 }

@@ -7,25 +7,6 @@ export interface IUser {
   id?: string;
 }
 
-export type SportType =
-  | "Basketball"
-  | "Baseball"
-  | "Tennis"
-  | "Football"
-  | "Soccer"
-  | "Hockey"
-  | "Volleyball"
-  | "Golf"
-  | "Cycling";
+export type SportType = "All" | "Basketball" | "Baseball" | "Tennis" | "Football" | "Soccer" | "Hockey" | "Volleyball" | "Golf" | "Cycling";
 
-export const sportTypeList: SportType[] = [
-  "Basketball",
-  "Baseball",
-  "Tennis",
-  "Football",
-  "Soccer",
-  "Hockey",
-  "Volleyball",
-  "Golf",
-  "Cycling",
-];
+export const sportTypeList: SportType[] = ["All", "Basketball", "Baseball", "Tennis", "Football", "Soccer", "Hockey", "Volleyball", "Golf", "Cycling"];

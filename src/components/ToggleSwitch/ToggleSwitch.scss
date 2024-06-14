@@ -1,0 +1,67 @@
+@import "../../styles/variables.scss";
+
+$switch-width: 150px;
+$switch-height: 45px;
+$circle-width: 50%;
+$circle-height: 100%;
+$border-radius: 12px;
+$padding: 4px;
+
+.switchContainer {
+  width: $switch-width;
+  height: $switch-height;
+  flex-direction: row;
+  border-radius: $border-radius;
+  justify-content: center;
+  padding: $padding;
+}
+
+.enabled {
+  background-color: $background-dark;
+  justify-content: flex-end;
+}
+
+.labelsBox {
+  @extend .hbox;
+  justify-content: center;
+  width: 100%;
+}
+
+.labelBox {
+  @extend .hbox;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 50%;
+  height: 100%;
+}
+
+.label {
+  @extend .buttonText;
+  font-size: 18px;
+  color: black;
+}
+
+.disabled {
+  @extend .enabled;
+  justify-content: flex-start;
+}
+
+.toggleCircle {
+  position: absolute;
+  top: 4;
+  left: 4;
+  width: $circle-width;
+  height: $circle-height;
+  border-radius: 8px;
+  background-color: $background;
+  z-index: -1;
+}
+
+.enabledCircle {
+  background-color: $background;
+  left: 52%;
+}
+
+.disabledCircle {
+  background-color: $background;
+}

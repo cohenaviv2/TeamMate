@@ -4,7 +4,7 @@ import { User } from "firebase/auth";
 import { IUser } from "../common/types";
 import { DataSnapshot, child, get, ref } from "firebase/database";
 
-interface AuthUser {
+export interface AuthUser {
   authUser: User;
   dbUser: IUser;
 }
@@ -24,15 +24,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = Firebase.auth.onAuthStateChanged(async (authUser) => {
+      setLoading(true);
       if (authUser) {
         try {
           const userRef = ref(Firebase.db, `users/${authUser.uid}`);
-          const snapshot:DataSnapshot = await get(child(userRef, "/"));
+          const snapshot: DataSnapshot = await get(child(userRef, "/"));
           if (!snapshot.exists()) {
             throw new Error("User does not exist");
           }
           const dbUser: IUser = snapshot.val();
-          console.log("Db user ok")
+          console.log("Db user ok");
           setCurrentUser({ authUser, dbUser });
         } catch (error) {
           setError(error);

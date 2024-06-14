@@ -15,7 +15,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
   return (
     <Layout navigation={navigation}>
       <View style={styles.profileBox}>
-        <Text>Profle</Text>
+        <Text style={{ fontSize: 30 }}>Profile</Text>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>

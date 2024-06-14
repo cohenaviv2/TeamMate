@@ -2,9 +2,10 @@ import { Firebase } from "./firebaseConfig";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { set, ref, get, child, DataSnapshot } from "firebase/database";
 import { IUser } from "../common/types";
+import { AuthUser } from "../context/AuthProvider";
 
 export const AuthService = {
-  async register(user: IUser): Promise<IUser> {
+  async register(user: IUser): Promise<AuthUser> {
     try {
       const credentials = await createUserWithEmailAndPassword(Firebase.auth, user.email, user.password);
       const uid = credentials.user.uid;
@@ -13,7 +14,8 @@ export const AuthService = {
       user.id = uid;
       user.password = "";
       await set(ref(Firebase.db, `users/${user.id}`), user);
-      return user;
+      const authUser:AuthUser = {authUser:credentials.user,dbUser:user}
+      return authUser;
     } catch (error) {
       console.log(error);
       throw error;

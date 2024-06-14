@@ -22,7 +22,7 @@ export default function Layout({ children, navigation }: LayoutProps) {
       ) : (
         <View style={styles.layout}>
           <View style={styles.logoHeader}>
-            <Image source={require("../../assets/images/logo.png")} style={styles.logo} />
+            <Image source={require("../../assets/images/logo2.png")} style={styles.logo} />
             {currentUser && (
               <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
                 <Image source={{ uri: currentUser.dbUser.imageUrl }} style={styles.userImage} />

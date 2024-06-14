@@ -1,5 +1,6 @@
 $primary: #ffc000;
 $primary-dark: #f3b909;
+$primary-light: #ffe083;
 $box: #fccd3f;
 $secondary: #ce7a39;
 $text: white;
@@ -8,12 +9,13 @@ $background-dark: #d9d9d9;
 $button: #1d9bf0;
 $success: #12bd0c;
 
-.screen {
+.container {
   flex: 1;
-  justify-content: center;
   align-items: center;
-  background-color: $background;
-  padding: 8px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  height: 100%;
+  width: 100%;
 }
 
 .hbox {
@@ -35,4 +37,19 @@ $success: #12bd0c;
   border-radius: 8px;
   font-size: 16px;
   color: $text;
+}
+
+.buttonText {
+  font-family: "Lato";
+  font-size: 20px;
+  color: $text;
+}
+
+.input {
+  min-width: 100%;
+  border-width: 1px;
+  background-color: white;
+  border: 2px solid $background;
+  border-radius: 8px;
+  padding: 10px;
 }

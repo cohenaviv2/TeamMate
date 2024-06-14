@@ -2,7 +2,8 @@
 
 
 .loginLayout {
-  @extend .screen;
+  @extend .container;
+  justify-content: center;
   background-color: $primary;
   gap: 3rem;
   padding-top: 3rem;
@@ -25,7 +26,7 @@
 
 .logo {
   width: 350px;
-  height: 50px;
+  height: 70px;
 }
 
 .loginTitle {
@@ -47,21 +48,6 @@
   background-color: $box;
 }
 
-.input {
-  min-width: 100%;
-  border-width: 1px;
-  background-color: white;
-  border: 2px solid $background;
-  border-radius: 8px;
-  padding: 10px;
-}
-
-.btnText {
-  font-size: 20px;
-  // color: $text;
-}
-
-
 .loginButton {
   @extend .button;
   margin-top: 1rem;
@@ -74,7 +60,7 @@
 
 .registerBox {
   @extend .vbox;
-  width: 90%;
+  width: 85%;
   padding: 24px 8px;
 }
 

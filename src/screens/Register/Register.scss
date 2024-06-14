@@ -1,7 +1,7 @@
 @import "../../styles/variables.scss";
 
 .registerBox {
-  @extend .screen;
+  @extend .container;
   background-color: $primary;
   gap: 1rem;
 }
@@ -11,25 +11,14 @@
   gap: 1.5rem;
   width: 90%;
   //   height: 55%;
-  padding: 32px;
+  padding: 16px;
   border-radius: 24px;
 }
-
-
-.input {
-  min-width: 100%;
-  border-width: 1px;
-  background-color: white;
-  border: 2px solid $background;
-  border-radius: 8px;
-  padding: 10px;
-}
-
 
 .imgButton {
   @extend .button;
   background-color: $primary-dark;
-  width: 55%;
+  width: 45%;
   gap: 0.5rem;
   height: 2.5rem;
   padding: 8px;
@@ -37,14 +26,13 @@
 
 .imgIcon {
   color: $text;
-  font-size: 22px;
+  font-size: 20px;
 }
 
 .imgBtnText {
-  color: $text;
-  font-weight: bold;
+  @extend .buttonText;
+  font-size: 14px;
 }
-
 
 .registerButton {
   @extend .button;
@@ -59,7 +47,7 @@
   width: 120px;
   height: 120px;
   border-radius: 100px;
-  background-color: $primary-dark;
+  background-color: $primary-light;
 }
 
 .image {

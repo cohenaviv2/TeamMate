@@ -1,10 +1,7 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthContext, AuthProvider } from "./context/AuthProvider";
-import RegisterScreen from "./screens/Register/Register";
-import LoginScreen from "./screens/Login/Login";
 import HomeScreen from "./screens/Home/Home";
 import UpcomingScreen from "./screens/Upcoming/Upcoming";
 import EventsScreen from "./screens/MyEvents/Events";
@@ -13,16 +10,9 @@ import styles from "./App.scss";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import * as Font from "expo-font";
 import Spinner from "./components/Spinner/Spinner";
+import { AuthStack } from "./stacks/AuthStack";
 
 const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
-
-const AuthStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
-    <Stack.Screen name="Register" component={RegisterScreen} options={{ headerStyle: { backgroundColor: "#ffc000" } }} />
-  </Stack.Navigator>
-);
 
 const MainTabNavigator = () => (
   <Tab.Navigator
@@ -44,12 +34,13 @@ const MainTabNavigator = () => (
             break;
         }
 
-        return <Ionicons name={iconName as "key"} size={30} color={color} />;
+        return <Ionicons name={iconName as "key"} size={32} color={color} />;
       },
       tabBarStyle: styles.tabBar,
       tabBarLabelStyle: styles.tabBarLabel,
-      tabBarActiveTintColor: "#CE7A39",
-      tabBarInactiveTintColor: "white",
+      tabBarActiveTintColor: "#f3b909",
+      tabBarInactiveTintColor: "#ffc000",
+      tabBarShowLabel: false,
       headerShown: false,
     })}
   >
@@ -61,26 +52,34 @@ const MainTabNavigator = () => (
 );
 
 const App = () => {
+  const [fontsLoaded, setFontsLoaded] = useState(false);
   const authContext = useContext(AuthContext);
   useEffect(() => {
-    (async () => {
-      Font.loadAsync({
+    const loadFonts = async () => {
+      await Font.loadAsync({
         Caveat: require("./assets/fonts/Caveat.ttf"),
         "Caveat-Bold": require("./assets/fonts/Caveat-Bold.ttf"),
-      }).then(() => console.log("Font was loaded successfuly."));
-    })();
+        "Lato": require("./assets/fonts/Lato-Regular.ttf"),
+        "Lato-Bold": require("./assets/fonts/Lato-Black.ttf"),
+      });
+      setFontsLoaded(true);
+    };
+
+    loadFonts();
   }, []);
+
+  useEffect(()=>console.log("App: authContext changed"),[authContext])
   
 
-  if (!authContext) {
+  if (!authContext || !fontsLoaded || authContext.loading) {
     return <Spinner size="l" />;
   }
 
   const { currentUser, loading } = authContext;
 
-  if (loading) {
-    return <Spinner size="l" />;
-  }
+  // if (loading) {
+  //   return <Spinner size="l" />;
+  // }
 
   return <NavigationContainer>{currentUser ? <MainTabNavigator /> : <AuthStack />}</NavigationContainer>;
 };

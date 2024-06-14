@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import styles from "./SportSelect.scss"
 
 export const sportTypeIconMap = {
+  All: <FontAwesome6 name="medal" style={styles.allSportsIcon} />,
   Basketball: <FontAwesome6 name="basketball" style={styles.basketballIcon} />,
   Baseball: <FontAwesome6 name="baseball" style={styles.baseballIcon} />,
   Tennis: <Ionicons name="tennisball" style={styles.tennisIcon} />,
@@ -11,5 +12,5 @@ export const sportTypeIconMap = {
   Hockey: <FontAwesome6 name="hockey-puck" style={styles.hockeyIcon} />,
   Volleyball: <FontAwesome6 name="volleyball" style={styles.volleyballIcon} />,
   Golf: <FontAwesome6 name="golf-ball-tee" style={styles.golfIcon} />,
-  Cycling: <FontAwesome6 name="bicycle" style={styles.bicycleIcon} />,
+  Cycling: <FontAwesome6 name="person-biking" style={styles.bicycleIcon} />,
 };

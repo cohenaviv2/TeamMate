@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Text, TextInput, Image, TouchableOpacity, View, Alert, KeyboardAvoidingView } from "react-native";
+import { Text, TextInput, Image, TouchableOpacity, View, Alert, KeyboardAvoidingView, ScrollView } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { AuthService } from "../../services/AuthService";
 import styles from "./Register.scss";
@@ -26,7 +26,7 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
   };
 
   async function handleRegister() {
-    if (!user.email || !user.password || !user.fullName || !imageUri) {
+    if (user.email == "" || user.password == "" || user.fullName == "" || !imageUri) {
       Alert.alert("Error", "Please fill in all fields and select an image.");
       return;
     }
@@ -70,23 +70,25 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
       {loading ? (
         <Spinner size="l" />
       ) : (
-        <KeyboardAvoidingView style={styles.registerBox} behavior="height">
-          <View style={styles.formBox}>
-            <View style={styles.imageBox}>{imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}</View>
-            <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker}>
-              <Octicons name="image" style={styles.imgIcon} />
-              <Text style={styles.imgBtnText}>Choose image</Text>
-            </TouchableOpacity>
-            <TextInput style={styles.input} placeholder="Full Name" value={user.fullName} onChangeText={(val) => setUser({ ...user, fullName: val })} />
-            <TextInput style={styles.input} placeholder="Email" value={user.email} onChangeText={(val) => setUser({ ...user, email: val })} keyboardType="email-address" />
-            <TextInput style={styles.input} placeholder="Password" value={user.password} onChangeText={(val) => setUser({ ...user, password: val })} secureTextEntry />
-            <Text style={styles.favText}>Your Favorite Sport</Text>
-            <SportSelect onChange={handleSportTypeChange} />
-            <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-              <Text style={{ fontSize: 20 }}>Register</Text>
-            </TouchableOpacity>
+        <ScrollView>
+          <View style={styles.registerBox}>
+            <View style={styles.formBox}>
+              <View style={styles.imageBox}>{imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}</View>
+              <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker}>
+                <Octicons name="image" style={styles.imgIcon} />
+                <Text style={styles.imgBtnText}>Choose image</Text>
+              </TouchableOpacity>
+              <TextInput style={styles.input} placeholder="Full Name" value={user.fullName} onChangeText={(val) => setUser({ ...user, fullName: val })} />
+              <TextInput style={styles.input} placeholder="Email" value={user.email} onChangeText={(val) => setUser({ ...user, email: val })} autoCapitalize="none" keyboardType="email-address" />
+              <TextInput style={styles.input} placeholder="Password" value={user.password} onChangeText={(val) => setUser({ ...user, password: val })} secureTextEntry />
+              <Text style={styles.favText}>Your Favorite Sport</Text>
+              <SportSelect theme="secondary" onChange={handleSportTypeChange} />
+              <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+                <Text style={styles.buttonText}>Register</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </KeyboardAvoidingView>
+        </ScrollView>
       )}
     </>
   );
