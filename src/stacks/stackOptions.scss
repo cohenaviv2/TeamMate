@@ -1,0 +1,13 @@
+@import "../styles/variables.scss";
+
+.backIconBox {
+    @extend .hbox;
+    padding-top: 4px;
+    width: 35%;
+    margin-left: -15%;
+}
+
+.backIcon {
+    font-size: 20px;
+    color: $text;
+}

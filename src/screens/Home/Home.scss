@@ -7,7 +7,7 @@
   padding-right: 2px;
 }
 
-.headerBox {
+.menuBox {
   @extend .hbox;
   justify-content: center;
   gap: 2rem;
@@ -31,8 +31,17 @@
   @extend .button;
   gap: 1rem;
   padding: 8px;
-  border-radius: 16px;
+  border-radius: 50px;
   background-color: $primary-dark;
-  width: 60%;
+  width: 3.5rem;
   height: 3.5rem;
 }
+
+.listSwitchBox {
+  width: 150px;
+}
+
+.dateSwitchBox {
+  width: 70%;
+}
+

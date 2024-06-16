@@ -1,9 +1,13 @@
 @import "../../styles/variables.scss";
 
+.scrollBox {
+  flex: 1;
+  background-color: $primary;
+}
+
 .registerBox {
   @extend .container;
-  background-color: $primary;
-  gap: 1rem;
+  gap: 3rem;
 }
 
 .formBox {
@@ -35,7 +39,12 @@
 }
 
 .registerButton {
-  @extend .button;
+  @extend .vbox;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 16px;
+  color: $text;
   padding: 8px;
   margin-top: 2rem;
   background-color: $secondary;

@@ -1,8 +1,7 @@
-import { Dimensions, View, Alert, Text, TouchableOpacity } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import { View, TouchableOpacity, Vibration } from "react-native";
+import React, { useContext, useState } from "react";
 import Layout from "../../components/Layout/Layout";
 import MapView, { Marker } from "react-native-maps";
-import * as Location from "expo-location";
 import fakeEvents from "./data";
 import { FontAwesome5 } from "@expo/vector-icons";
 import SportSelect from "../../components/SportSelect/SportSelect";
@@ -10,32 +9,23 @@ import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import styles from "./Home.scss";
 import { AuthContext } from "../../context/AuthProvider";
 
-export default function HomeScreen({ navigation }: { navigation: any }) {
-  const [location, setLocation] = useState<Location.LocationObject | null>(null);
-   const authContext = useContext(AuthContext);
+export default function HomeScreen({ navigation, location }: any) {
+  const authContext = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
 
-  const getLocationPermission = async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-      Alert.alert("Error", "Permission to access location was denied");
-      return;
-    }
+  function simulateLoading() {
+    setLoading(true);
+    setTimeout(() => setLoading(false), 1000);
+  }
 
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-  };
-
-  useEffect(() => {
-    getLocationPermission();
-  }, []);
-
-  
   return (
-    <Layout navigation={navigation}>
+    <Layout navigation={navigation} loading={loading}>
       <View style={styles.homeBox}>
-        <View style={styles.headerBox}>
-          <ToggleSwitch onToggle={() => {}} firstIcon={<FontAwesome5 name="map-marker-alt" size={20} />} secondIcon={<FontAwesome5 name="list" size={20} />} />
-          <SportSelect initialVal={authContext!.currentUser!.dbUser.favoriteSport} theme="secondary" onChange={() => {}} />
+        <View style={styles.menuBox}>
+          <View style={styles.listSwitchBox}>
+            <ToggleSwitch onToggle={simulateLoading} labels={["Map", "List"]} showLabels={false} icons={[<FontAwesome5 name="map-marker-alt" size={20} />, <FontAwesome5 name="list" size={20} />]} />
+          </View>
+          <SportSelect initialVal={authContext!.currentUser!.dbUser.favoriteSport} theme="secondary" onChange={simulateLoading} vibrate />
         </View>
         <View style={styles.mapBox}>
           {location && (
@@ -56,10 +46,20 @@ export default function HomeScreen({ navigation }: { navigation: any }) {
             </MapView>
           )}
         </View>
-        <TouchableOpacity style={styles.newEventButton} onPress={() => {}}>
-          <FontAwesome5 name="plus" size={20} style={styles.buttonText} />
-          <Text style={styles.buttonText}>Create New Event</Text>
-        </TouchableOpacity>
+        <View style={styles.menuBox}>
+          <View style={styles.dateSwitchBox}>
+            <ToggleSwitch onToggle={simulateLoading} labels={["Today", "Week", "Month"]} showLabels />
+          </View>
+          <TouchableOpacity
+            style={styles.newEventButton}
+            onPress={() => {
+              // Vibration.vibrate(10);
+              navigation.navigate("NewEvent");
+            }}
+          >
+            <FontAwesome5 name="plus" size={20} style={styles.buttonText} />
+          </TouchableOpacity>
+        </View>
       </View>
     </Layout>
   );

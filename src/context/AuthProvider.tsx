@@ -33,7 +33,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             throw new Error("User does not exist");
           }
           const dbUser: IUser = snapshot.val();
-          console.log("Db user ok");
           setCurrentUser({ authUser, dbUser });
         } catch (error) {
           setError(error);

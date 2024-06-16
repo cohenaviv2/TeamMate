@@ -1,19 +1,94 @@
 @import "../../styles/variables.scss";
 
 .profileBox {
-    @extend .container;
-    width: 100%;
-    gap: 1rem;
+  @extend .container;
+  width: 100%;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .logoutButton {
-    @extend .button;
-    background-color: rgb(223, 7, 7);
-    width: 50%;
-    padding: 12px;
-    margin-top: auto;
+  @extend .button;
+  background-color: rgb(223, 7, 7);
+  width: 50%;
+  padding: 12px;
+  margin-top: auto;
 }
 
 .logoutText {
-    @extend .buttonText;
+  @extend .buttonText;
+}
+
+.nameImageBox {
+  @extend .hbox;
+  justify-content: center;
+  width: 95%;
+  height: 25%;
+  border-radius: 12px;
+  padding: 16px;
+  background-color: $box;
+}
+
+.imageBox {
+  @extend .hbox;
+  justify-content: center;
+  width: 30%;
+  height: 100%;
+}
+
+.image {
+  border-radius: 50px;
+  width: 100px;
+  height: 100px;
+  border: 2px solid $primary-dark;
+}
+
+.nameBox {
+  @extend .vbox;
+  justify-content: center;
+  gap: 1rem;
+  height: 100%;
+  width: 70%;
+}
+
+.nameText {
+  font-family: "Lato-Bold";
+  color: $text;
+  font-size: 22px;
+  width: 90%;
+  padding: 10px 16px;
+  // text-align: center;
+  border-radius: 8px;
+  background-color: $primary-dark;
+}
+
+.emailText {
+  @extend .nameText;
+  font-family: "Lato";
+  font-size: 20px;
+  background-color: $primary;
+}
+
+.favBox {
+  @extend .hbox;
+  justify-content: center;
+  width: 95%;
+  height: 10%;
+  border-radius: 10px;
+  padding: 16px;
+  background-color: $background-dark;
+}
+
+.favText {
+  font-size: 24px;
+  color: $text;
+  width: 50%;
+  text-align: center;
+  font-family: "Caveat-Bold";
+}
+
+.myEventsText {
+    @extend .favText;
+    font-size: 26px;
+    color: $primary-dark;
 }

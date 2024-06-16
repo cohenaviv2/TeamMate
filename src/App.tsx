@@ -2,25 +2,26 @@ import { useContext, useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AuthContext, AuthProvider } from "./context/AuthProvider";
-import HomeScreen from "./screens/Home/Home";
 import UpcomingScreen from "./screens/Upcoming/Upcoming";
-import EventsScreen from "./screens/MyEvents/Events";
+import MyEventsScreen from "./screens/MyEvents/MyEvents";
 import ProfileScreen from "./screens/Profile/Profle";
 import styles from "./App.scss";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import * as Font from "expo-font";
-import Spinner from "./components/Spinner/Spinner";
 import { AuthStack } from "./stacks/AuthStack";
+import { HomeStack } from "./stacks/HomeStack";
+import { getLocationPermission, loadFonts } from "./utils/initialize";
+import { LocationObject } from "expo-location";
+import Loading from "./screens/Loading/Loading";
 
 const Tab = createBottomTabNavigator();
 
-const MainTabNavigator = () => (
+const MainTabNavigator = ({ location }: any) => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
-      tabBarIcon: ({ focused, color, size }) => {
+      tabBarIcon: ({ focused, color }) => {
         let iconName;
         switch (route.name) {
-          case "Home":
+          case "HomeStack":
             iconName = focused ? "home" : "home-outline";
             break;
           case "Upcoming":
@@ -33,7 +34,6 @@ const MainTabNavigator = () => (
             iconName = focused ? "person" : "person-outline";
             break;
         }
-
         return <Ionicons name={iconName as "key"} size={32} color={color} />;
       },
       tabBarStyle: styles.tabBar,
@@ -44,44 +44,54 @@ const MainTabNavigator = () => (
       headerShown: false,
     })}
   >
-    <Tab.Screen name="Home" component={HomeScreen} />
+    <Tab.Screen name="HomeStack">{() => <HomeStack location={location} />}</Tab.Screen>
     <Tab.Screen name="Upcoming" component={UpcomingScreen} />
-    <Tab.Screen name="MyEvents" component={EventsScreen} />
+    <Tab.Screen name="MyEvents" component={MyEventsScreen} />
     <Tab.Screen name="Profile" component={ProfileScreen} />
   </Tab.Navigator>
 );
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [locationPermissionGranted, setLocationPermissionGranted] = useState(false);
+  const [location, setLocation] = useState<LocationObject | null>(null);
   const authContext = useContext(AuthContext);
+
   useEffect(() => {
-    const loadFonts = async () => {
-      await Font.loadAsync({
-        Caveat: require("./assets/fonts/Caveat.ttf"),
-        "Caveat-Bold": require("./assets/fonts/Caveat-Bold.ttf"),
-        "Lato": require("./assets/fonts/Lato-Regular.ttf"),
-        "Lato-Bold": require("./assets/fonts/Lato-Black.ttf"),
-      });
-      setFontsLoaded(true);
+    const loadAppResources = async () => {
+      try {
+        await loadFonts();
+        const locationData = await getLocationPermission();
+        setLocation(locationData);
+        setLocationPermissionGranted(true);
+        setFontsLoaded(true);
+      } catch (error) {
+        console.error("Error loading app resources:", error);
+        setLocationPermissionGranted(false);
+        setFontsLoaded(true);
+      }
     };
 
-    loadFonts();
+    loadAppResources();
   }, []);
 
-  useEffect(()=>console.log("App: authContext changed"),[authContext])
-  
-
-  if (!authContext || !fontsLoaded || authContext.loading) {
-    return <Spinner size="l" />;
+  if (!authContext) {
+    return <Loading spinnerSize="l" />
   }
 
-  const { currentUser, loading } = authContext;
+  const { currentUser, loading, error } = authContext;
 
-  // if (loading) {
-  //   return <Spinner size="l" />;
-  // }
+  useEffect(() => {}, [loading, currentUser]);
 
-  return <NavigationContainer>{currentUser ? <MainTabNavigator /> : <AuthStack />}</NavigationContainer>;
+  if (!fontsLoaded || !locationPermissionGranted || loading) {
+    return <Loading spinnerSize="l" />
+  }
+
+  return (
+    <NavigationContainer>
+      <AuthContext.Provider value={{ currentUser, loading, error }}>{currentUser ? <MainTabNavigator location={location} /> : <AuthStack />}</AuthContext.Provider>
+    </NavigationContainer>
+  );
 };
 
 export default () => (

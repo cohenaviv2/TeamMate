@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, PanResponder, Animated } from "react-native";
+import { View, Text, TouchableOpacity, PanResponder, Animated, Vibration } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { SportType, sportTypeList } from "../../common/types";
 import styles from "./SportSelect.scss";
@@ -9,16 +9,22 @@ interface SportSelectProps {
   onChange: (sportType: SportType) => void;
   theme: "primary" | "secondary";
   initialVal?: SportType;
+  excludeAllOption?: boolean;
+  vibrate?: boolean;
 }
 
-const SportSelect: React.FC<SportSelectProps> = ({ onChange, theme, initialVal }) => {
-  const [currentIndex, setCurrentIndex] = useState<number>(initialVal ? sportTypeList.indexOf(initialVal) : 0);
-  const [sportType, setSportType] = useState<SportType>(sportTypeList[currentIndex]);
+const SportSelect: React.FC<SportSelectProps> = ({ onChange, theme, initialVal, excludeAllOption, vibrate }) => {
+  const filteredSportTypeList = excludeAllOption ? sportTypeList.filter((sport) => sport !== "All") : sportTypeList;
+  const initialIndex = initialVal ? filteredSportTypeList.indexOf(initialVal) : 0;
+
+  const [currentIndex, setCurrentIndex] = useState<number>(initialIndex);
+  const [sportType, setSportType] = useState<SportType>(filteredSportTypeList[currentIndex]);
   const translateX = useState(new Animated.Value(0))[0];
 
   useEffect(() => {
-    setSportType(sportTypeList[currentIndex]);
-    onChange(sportTypeList[currentIndex]);
+    setSportType(filteredSportTypeList[currentIndex]);
+    onChange(filteredSportTypeList[currentIndex]);
+    if (vibrate) Vibration.vibrate(10);
   }, [currentIndex]);
 
   const panResponder = useState(
@@ -44,12 +50,12 @@ const SportSelect: React.FC<SportSelectProps> = ({ onChange, theme, initialVal }
   )[0];
 
   const handlePrev = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + sportTypeList.length) % sportTypeList.length);
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + filteredSportTypeList.length) % filteredSportTypeList.length);
     resetPosition();
   };
 
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % sportTypeList.length);
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % filteredSportTypeList.length);
     resetPosition();
   };
 

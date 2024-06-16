@@ -37,7 +37,7 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
         ...user,
         imageUrl,
       });
-      navigation.navigate("Login");
+      // navigation.navigate("Login");
     } catch (error) {
       Alert.alert("Registration failed");
     } finally {
@@ -70,7 +70,7 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
       {loading ? (
         <Spinner size="l" />
       ) : (
-        <ScrollView>
+        <ScrollView style={styles.scrollBox}>
           <View style={styles.registerBox}>
             <View style={styles.formBox}>
               <View style={styles.imageBox}>{imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}</View>

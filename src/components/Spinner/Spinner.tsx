@@ -3,14 +3,13 @@ import styles from "./Spinner.scss";
 
 interface SpinnerProps {
   size: "s" | "m" | "l";
-  color?: string;
+  theme:"primary"|"secondary";
 }
 
-const Spinner = ({ size, color }: SpinnerProps) => {
+const Spinner = ({ size, theme }: SpinnerProps) => {
   return (
     <View style={styles.spinnerBox} accessibilityRole="progressbar">
-      <Image source={require("../../assets/images/logo.png")} style={styles.logo}></Image>
-      <ActivityIndicator size={size === "s" ? 20 : size === "m" ? 30 : 40} color={"#ce7a39"} />
+      <ActivityIndicator size={size === "s" ? 20 : size === "m" ? 30 : 40} color={theme == "primary" ? "#f3b909" : "#ce7a39"} />
     </View>
   );
 };

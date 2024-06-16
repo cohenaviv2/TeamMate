@@ -1,14 +1,6 @@
 @import "../../styles/variables.scss";
 
 .spinnerBox {
-  @extend .screen;
-  gap: 2rem;
-  background-color: $primary;
+  flex: 1;
+  justify-content:flex-end;
 }
-
-.logo {
-  width: 250px;
-  height: 50px;
-}
-
-

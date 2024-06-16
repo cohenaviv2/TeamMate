@@ -2,39 +2,48 @@
 
 .layout {
   flex: 1;
-  justify-content: center;
-  align-items: center;
-  background-color: $background;
+  // justify-content: center;
+  // align-items: center;
+  // background-color: $background;
 }
 
 .logoHeader {
   @extend .hbox;
   justify-content: center;
-  background-color: $primary;
-  border-bottom-color: $primary-dark;
-  border-bottom-width: 2px;
+  background-color: $background;
+  // border-bottom-color: rgb(236, 236, 236);
+  // border-bottom-width: 2px;
   height: 80px;
   width: 100%;
-  // position: absolute;
-  // top: 0;
-  // left: 0;
-  // z-index: 1000;
+  gap: 1rem;
+}
+
+.headerBox {
+  @extend .hbox;
+  width: 50%;
+  height: 100%;
+  padding: 8px;
 }
 
 .logo {
-  width: 45%; 
-  height: 45%;
-  margin-left: 0.5rem;
-  margin-top: 30px;
+  width: 75%;
+  height: 42%;
+  margin-top: auto;
   margin-right: auto;
 }
 
-.userImage {
-  width: 38px;
-  height: 38px;
-  margin-top: 30px;
-  margin-right: 1rem;
-  border-radius: 50px;
-  // border: 2px solid $primary-dark;
+.spinnerBox {
+  margin-top: auto;
   margin-left: auto;
+  margin-right: 8px;
+}
+
+.userImage {
+  width: 35px;
+  height: 35px;
+  border-radius: 50px;
+  margin-right: 4px;
+  margin-top: auto;
+  margin-left: auto;
+  border: 2px solid $primary-light;
 }

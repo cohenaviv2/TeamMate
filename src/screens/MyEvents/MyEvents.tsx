@@ -1,8 +1,8 @@
 import {  Text, View } from 'react-native'
 import Layout from "../../components/Layout/Layout";
-import styles from "./Events.scss"
+import styles from "./MyEvents.scss"
 
-export default function EventsScreen({ navigation }: { navigation: any }) {
+export default function MyEventsScreen({ navigation }: { navigation: any }) {
   return (
     <Layout navigation={navigation}>
       <View style={styles.eventsBox}>
