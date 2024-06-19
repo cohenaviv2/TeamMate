@@ -8,6 +8,7 @@ import SportSelect from "../../components/SportSelect/SportSelect";
 import { IUser, SportType, sportTypeList } from "../../common/types";
 import { uploadImage } from "../../services/cloudinaryService";
 import Octicons from '@expo/vector-icons/Octicons';
+import { launchImagePicker } from "../../utils/initialize";
 
 export default function RegisterScreen({ navigation }: { navigation: any }) {
   const [user, setUser] = useState<IUser>({
@@ -46,18 +47,7 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
   }
 
   const handleImagePicker = async () => {
-    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permissionResult.granted) {
-      alert("Permission to access camera roll is required!");
-      return;
-    }
-    const pickerResult = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
-      aspect: [4, 4],
-      base64: true,
-    });
-    if (pickerResult.canceled) return;
-    const uri = pickerResult.assets[0].uri;
+    const uri = await launchImagePicker([4,4]);
     setImageUri(uri);
   };
 
@@ -93,24 +83,3 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
     </>
   );
 }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   input: {
-//     width: "80%",
-//     height: 40,
-//     borderWidth: 1,
-//     borderColor: "gray",
-//     marginVertical: 10,
-//     paddingHorizontal: 10,
-//   },
-//   image: {
-//     width: 100,
-//     height: 100,
-//     marginVertical: 10,
-//   },
-// });

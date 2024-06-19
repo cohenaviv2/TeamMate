@@ -1,17 +1,27 @@
 import { View, TouchableOpacity, Vibration } from "react-native";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Layout from "../../components/Layout/Layout";
 import MapView, { Marker } from "react-native-maps";
-import fakeEvents from "./data";
+import { IEvent } from "../../common/types";
 import { FontAwesome5 } from "@expo/vector-icons";
 import SportSelect from "../../components/SportSelect/SportSelect";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import styles from "./Home.scss";
 import { AuthContext } from "../../context/AuthProvider";
+import EventModel from "../../models/EventModel";
 
 export default function HomeScreen({ navigation, location }: any) {
   const authContext = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
+  const [events, setEvents] = useState<IEvent[]>([]);
+
+  useEffect(() => {
+    setLoading(true);
+    EventModel.getAllEvents()
+      .then((events) => setEvents(events))
+      .catch((error) => console.log(error))
+      .finally(() => setLoading(false));
+  }, []);
 
   function simulateLoading() {
     setLoading(true);
@@ -40,8 +50,8 @@ export default function HomeScreen({ navigation, location }: any) {
               }}
               showsUserLocation={true}
             >
-              {fakeEvents.map((event) => (
-                <Marker key={event.id} coordinate={{ latitude: event.latitude, longitude: event.longitude }} title={event.title} description={event.description} />
+              {events.map((event) => (
+                <Marker key={event.id} coordinate={{ latitude: event.location.latitude, longitude: event.location.longitude }} title={event.title} description={event.sportType} />
               ))}
             </MapView>
           )}

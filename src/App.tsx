@@ -9,7 +9,7 @@ import styles from "./App.scss";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { AuthStack } from "./stacks/AuthStack";
 import { HomeStack } from "./stacks/HomeStack";
-import { getLocationPermission, loadFonts } from "./utils/initialize";
+import { getImagePickerPermission, getLocationPermission, loadFonts } from "./utils/initialize";
 import { LocationObject } from "expo-location";
 import Loading from "./screens/Loading/Loading";
 
@@ -55,15 +55,21 @@ const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [locationPermissionGranted, setLocationPermissionGranted] = useState(false);
   const [location, setLocation] = useState<LocationObject | null>(null);
+  const [imagePermissionGranted, setImagePermissionGranted] = useState(false);
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
     const loadAppResources = async () => {
       try {
         await loadFonts();
+        // Get location permission
         const locationData = await getLocationPermission();
         setLocation(locationData);
         setLocationPermissionGranted(true);
+        // Get image picker permission
+        const imagePermission = await getImagePickerPermission();
+        setImagePermissionGranted(imagePermission);
+
         setFontsLoaded(true);
       } catch (error) {
         console.error("Error loading app resources:", error);
@@ -83,8 +89,8 @@ const App = () => {
 
   useEffect(() => {}, [loading, currentUser]);
 
-  if (!fontsLoaded || !locationPermissionGranted || loading) {
-    return <Loading spinnerSize="l" />
+  if (!fontsLoaded || !locationPermissionGranted || !imagePermissionGranted || loading) {
+    return <Loading spinnerSize="l" />;
   }
 
   return (
