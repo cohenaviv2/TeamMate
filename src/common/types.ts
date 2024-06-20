@@ -14,20 +14,26 @@ export const sportTypeList: SportType[] = ["All", "Basketball", "Baseball", "Ten
 export interface IEvent {
   sportType: SportType;
   title: string;
-  date: Date;
+  dateTime: string;
   imageUrl: string;
   location: {
     name?: string;
     latitude: number;
     longitude: number;
   };
-  participants: string[];
+  participants: {
+    [participantId: string]: {
+      id: string;
+      fullName: string;
+      imageUrl: string;
+    };
+  };
   creator: {
     id: string;
     fullName: string;
     imageUrl: string;
   };
-  createdAt: Date;
+  createdAt: string;
   locationType?: "indoor" | "outdoor";
   participantsLimit?: number;
   description?: string;

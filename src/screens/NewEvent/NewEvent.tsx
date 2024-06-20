@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import EventModel from "../../models/EventModel";
@@ -13,6 +13,7 @@ import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import NumberInput from "../../components/NumberInput/NumberInput";
 import { launchImagePicker } from "../../utils/initialize";
 import { uploadImage } from "../../services/cloudinaryService";
+import Spinner from "../../components/Spinner/Spinner";
 
 const NewEventScreen = ({ navigation, location }: any) => {
   const authContext = useContext(AuthContext);
@@ -22,33 +23,38 @@ const NewEventScreen = ({ navigation, location }: any) => {
   const user = authContext.currentUser.dbUser;
   const [formState, setFormState] = useState<IEvent>({
     title: "",
-    date: new Date(),
+    dateTime: new Date().toISOString(),
     sportType: "Basketball",
     imageUrl: "",
     location: {
       latitude: location.latitude,
       longitude: location.longitude,
     },
-    participants: [],
+    participants: {},
     creator: {
       id: user.id!,
       fullName: user.fullName,
       imageUrl: user.imageUrl,
     },
-    createdAt: new Date(),
+    createdAt: new Date().toISOString(),
   });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [marker, setMarker] = useState<LatLng | null>(null);
   const [errors, setErrors] = useState<any>({});
+  const [error, setError] = useState<any>();
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
     setShowDatePicker(false);
     if (selectedDate) {
+      const currentDateTime = new Date(formState.dateTime);
+      currentDateTime.setFullYear(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate());
       setFormState((prevState) => ({
         ...prevState,
-        date: new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate(), prevState.date.getHours(), prevState.date.getMinutes()),
+        dateTime: currentDateTime.toISOString(),
       }));
     }
   };
@@ -56,9 +62,11 @@ const NewEventScreen = ({ navigation, location }: any) => {
   const handleTimeChange = (event: any, selectedTime: Date | undefined) => {
     setShowTimePicker(false);
     if (selectedTime) {
+      const currentDateTime = new Date(formState.dateTime);
+      currentDateTime.setHours(selectedTime.getHours(), selectedTime.getMinutes());
       setFormState((prevState) => ({
         ...prevState,
-        date: new Date(prevState.date.getFullYear(), prevState.date.getMonth(), prevState.date.getDate(), selectedTime.getHours(), selectedTime.getMinutes()),
+        dateTime: currentDateTime.toISOString(),
       }));
     }
   };
@@ -66,7 +74,6 @@ const NewEventScreen = ({ navigation, location }: any) => {
   const handleImagePicker = async () => {
     const uri = await launchImagePicker([5, 4]);
     setImageUri(uri);
-    errors.imageUrl = undefined;
   };
 
   const setNestedProperty = (obj: any, path: string, value: any) => {
@@ -85,7 +92,6 @@ const NewEventScreen = ({ navigation, location }: any) => {
   const validate = () => {
     const newErrors: any = {};
     if (!formState.title) newErrors.title = "Title is required";
-    if (!imageUri) newErrors.imageUrl = "Event image is required";
     if (!formState.location.longitude) newErrors.location = "Location is required";
     setErrors(newErrors);
     return Object.keys(newErrors).find((error) => error !== undefined) === undefined;
@@ -101,108 +107,132 @@ const NewEventScreen = ({ navigation, location }: any) => {
   }
 
   const handleSubmit = async () => {
-    if (!validate() || !imageUri) {
+    if (!validate()) {
       return;
     }
 
-    // Upload event image
-    const imageUrl = await uploadImage(imageUri, "");
-    const newEvent: IEvent = {
-      ...formState,
-      imageUrl,
-      createdAt: new Date(),
-    };
-
-    console.log(formState);
-
+    setLoading(true);
     try {
+      if (imageUri) {
+        // Upload event image
+        const imageUrl = await uploadImage(imageUri, "");
+      }
+      const newEvent: IEvent = {
+        ...formState,
+        imageUrl: imageUri ? imageUri : "",
+        createdAt: new Date().toISOString(),
+      };
+
       await EventModel.createEvent(newEvent);
-      navigation.goBack();
+      setSuccess(true);
+      setTimeout(() => {
+        setSuccess(false);
+        setLoading(false);
+        navigation.goBack();
+      }, 700);
     } catch (error) {
+      setError(error);
+      setLoading(false);
       console.error("Error creating event:", error);
     }
   };
 
-  return (
-    <ScrollView style={styles.newEventBox} contentContainerStyle={{ justifyContent: "center", alignItems: "center", gap: 16 }}>
-      <View style={[styles.sportTypeBox, shadowStyles.shadow]}>
-        <Text style={styles.newEventText}>New</Text>
-        <SportSelect excludeAllOption theme="secondary" onChange={(value) => handleChange("sportType", value)} vibrate />
-        <Text style={styles.newEventText}>Event</Text>
+  if (loading)
+    return (
+      <View style={styles.spinnerBox}>
+        <Image source={require("../../assets/images/logo2.png")} style={styles.logo} />
+        {success ? <Octicons name="check-circle-fill" style={styles.successIcon} /> : <Spinner size="l" theme="primary" />}
       </View>
+    );
+  else
+    return (
+      <View style={styles.eventsBox}>
+        <ScrollView style={styles.newEventBox} contentContainerStyle={{ justifyContent: "center", alignItems: "center", gap: 16 }}>
+          <View style={[styles.sportTypeBox, shadowStyles.shadow]}>
+            <Text style={styles.newEventText}>New</Text>
+            <SportSelect excludeAllOption theme="secondary" onChange={(value) => handleChange("sportType", value)} vibrate />
+            <Text style={styles.newEventText}>Event</Text>
+          </View>
 
-      <TextInput placeholder="Event Title" style={[errors.title !== undefined ? styles.errorInput : styles.input, shadowStyles.shadow]} value={formState.title} onChangeText={(value) => handleChange("title", value)} />
-      {errors.title !== undefined && <Text style={styles.error}>{errors.title}</Text>}
+          <TextInput placeholder="Event Title" style={[errors.title !== undefined ? styles.errorInput : styles.input, shadowStyles.shadow]} value={formState.title} onChangeText={(value) => handleChange("title", value)} />
+          {errors.title !== undefined && <Text style={styles.error}>{errors.title}</Text>}
 
-      <View style={errors.location ? styles.errorMapBox : styles.mapBox}>
-        {location && (
-          <MapView
-            loadingBackgroundColor="#ffc000"
-            style={styles.map}
-            initialRegion={{
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-            showsUserLocation={true}
-            onLongPress={handleMapLongPress}
-          >
-            {marker && <Marker coordinate={marker} title={formState.title} />}
-          </MapView>
-        )}
+          <View style={errors.location ? styles.errorMapBox : styles.mapBox}>
+            {location && (
+              <MapView
+                loadingBackgroundColor="#ffc000"
+                style={styles.map}
+                initialRegion={{
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+                showsUserLocation={true}
+                onLongPress={handleMapLongPress}
+              >
+                {marker && <Marker coordinate={marker} title={formState.title} />}
+              </MapView>
+            )}
+          </View>
+          {errors.location !== undefined && <Text style={styles.error}>{errors.location}</Text>}
+
+          <View style={styles.dateTimeBox}>
+            <TouchableOpacity style={[styles.dateButton, shadowStyles.shadow]} onPress={() => setShowDatePicker(true)}>
+              <Text style={styles.dateText}>{new Date(formState.dateTime).toDateString()}</Text>
+            </TouchableOpacity>
+            {showDatePicker && <DateTimePicker value={new Date(formState.dateTime)} mode="date" display="default" onChange={handleDateChange} />}
+
+            <TouchableOpacity style={[styles.timeButton, shadowStyles.shadow]} onPress={() => setShowTimePicker(true)}>
+              <Text style={styles.dateText}>{new Date(formState.dateTime).toTimeString().substring(0, 5)}</Text>
+            </TouchableOpacity>
+            {showTimePicker && <DateTimePicker value={new Date(formState.dateTime)} mode="time" display="inline" onChange={handleTimeChange} />}
+          </View>
+
+          <Text style={styles.labelText}>Optional?:</Text>
+          <View style={styles.typeBox}>
+            <Text>Location Type:</Text>
+            <View style={{ width: "70%" }}>
+              <ToggleSwitch onToggle={(value) => handleChange("locationType", value)} labels={["Outdoor", "Indoor"]} showLabels />
+            </View>
+          </View>
+          <TextInput placeholder="Location name" style={[styles.input, shadowStyles.shadow]} value={formState.location.name} onChangeText={(value) => handleChange("location.name", value === "" ? undefined : value)} />
+          <View style={errors.imageUrl !== undefined ? styles.errorImgBox : styles.imgBox}>{imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}</View>
+          {errors.imageUrl !== undefined && <Text style={styles.error}>{errors.imageUrl}</Text>}
+          <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker}>
+            <Octicons name="image" style={styles.imgIcon} />
+            <Text style={styles.imgBtnText}>Choose image</Text>
+          </TouchableOpacity>
+
+          <View style={styles.typeBox}>
+            <Text>Num of Participants:</Text>
+            <View style={{ width: "50%", marginLeft: 16 }}>
+              <NumberInput
+                min={2}
+                max={30}
+                initialVal={"No Limit"}
+                onChange={(value) => {
+                  handleChange("participantsLimit", value);
+                }}
+              />
+            </View>
+          </View>
+
+          <TextInput
+            placeholder="Description"
+            multiline
+            numberOfLines={8}
+            style={[styles.input, shadowStyles.shadow, { textAlignVertical: "top" }]}
+            value={formState.description}
+            onChangeText={(value) => handleChange("description", value === "" ? undefined : value)}
+          />
+
+        </ScrollView>
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={styles.buttonText}>Create Event</Text>
+          </TouchableOpacity>
       </View>
-      {errors.location !== undefined && <Text style={styles.error}>{errors.location}</Text>}
-
-      <View style={styles.dateTimeBox}>
-        <TouchableOpacity style={[styles.dateButton, shadowStyles.shadow]} onPress={() => setShowDatePicker(true)}>
-          <Text style={styles.dateText}>{formState.date.toDateString()}</Text>
-        </TouchableOpacity>
-        {showDatePicker && <DateTimePicker value={formState.date} mode="date" display="default" onChange={handleDateChange} />}
-
-        <TouchableOpacity style={[styles.timeButton, shadowStyles.shadow]} onPress={() => setShowTimePicker(true)}>
-          <Text style={styles.dateText}>{formState.date.toTimeString().substring(0, 5)}</Text>
-        </TouchableOpacity>
-        {showTimePicker && <DateTimePicker value={formState.date} mode="time" display="inline" onChange={handleTimeChange} />}
-      </View>
-
-      <View style={errors.imageUrl !== undefined ? styles.errorImgBox : styles.imgBox}>{imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}</View>
-      {errors.imageUrl !== undefined && <Text style={styles.error}>{errors.imageUrl}</Text>}
-      <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker}>
-        <Octicons name="image" style={styles.imgIcon} />
-        <Text style={styles.imgBtnText}>Choose image</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.labelText}>Optional?:</Text>
-      <TextInput placeholder="Location name" style={[styles.input, shadowStyles.shadow]} value={formState.location.name} onChangeText={(value) => handleChange("location.name", value === "" ? undefined : value)} />
-      <View style={styles.typeBox}>
-        <Text>Location Type:</Text>
-        <View style={{ width: "70%" }}>
-          <ToggleSwitch onToggle={(value) => handleChange("locationType", value)} labels={["Outdoor", "Indoor"]} showLabels />
-        </View>
-      </View>
-
-      <View style={styles.typeBox}>
-        <Text>Num of Participants:</Text>
-        <View style={{ width: "60%" }}>
-          <NumberInput min={2} max={30} initialVal={"No Limit"} onChange={(value) => handleChange("participantsLimit", value)} />
-        </View>
-      </View>
-
-      <TextInput
-        placeholder="Description"
-        multiline
-        numberOfLines={8}
-        style={[styles.input, shadowStyles.shadow, { textAlignVertical: "top" }]}
-        value={formState.description}
-        onChangeText={(value) => handleChange("description", value === "" ? undefined : value)}
-      />
-
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Create Event</Text>
-      </TouchableOpacity>
-    </ScrollView>
-  );
+    );
 };
 
 const shadowStyles = StyleSheet.create({

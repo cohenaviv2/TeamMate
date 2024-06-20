@@ -1,16 +1,18 @@
 @import "../../styles/variables.scss";
 
+.eventsBox {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+
 .newEventBox {
   flex: 1;
   gap: 1rem;
   padding: 16px;
   padding-bottom: 5rem;
 }
-
-.eventsBox {
-  @extend .container;
-}
-
 .sportTypeBox {
   @extend .hbox;
   justify-content: center;
@@ -56,6 +58,9 @@
 
 .labelText {
   width: 95%;
+  font-size: 16px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .errorInput {
@@ -103,6 +108,7 @@
   height: 10rem;
   background-color: $background-dark;
   border-radius: 16px;
+  overflow: hidden;
 }
 
 .errorImgBox {
@@ -113,7 +119,7 @@
 .image {
   width: 100%;
   height: 100%;
-  border-radius: 100px;
+  // border-radius: 100px;
 }
 
 .imgButton {
@@ -144,8 +150,27 @@
 
 .submitButton {
   @extend .button;
-  background-color: $secondary;
+  background-color: $primary-dark;
   padding: 16px;
   width: 65%;
-  margin-bottom: 2rem;
+  margin: 8px;
 }
+
+.spinnerBox {
+  @extend .vbox;
+  gap: 1.5rem;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.successIcon {
+  font-size: 38px;
+  color: $success;
+}
+
+.logo {
+  width: 50%;
+  height: 45px;
+}
+

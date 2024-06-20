@@ -1,0 +1,35 @@
+@import "../../../styles/variables.scss";
+
+.eventListItem {
+  @extend .vbox;
+  justify-content: center;
+  background-color: $text;
+  min-width: 100%;
+  height: 8rem;
+  padding: 8px 16px;
+  border: 1px solid $background-dark;
+}
+
+.titleBox {
+  @extend .hbox;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: $background;
+  padding: 8px 16px;
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: auto;
+}
+
+.userTagBox {
+  margin-right: auto;
+}
+
+.sportTypeBox {
+  @extend .hbox;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+

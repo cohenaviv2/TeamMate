@@ -1,0 +1,17 @@
+@import "../../styles/variables.scss";
+
+.userBox {
+  @extend .hbox;
+  gap: 0.5rem;
+  width: 10rem;
+  height: 2rem;
+}
+
+.userImage {
+    border-radius: 100px;
+    height: 2rem;
+    width: 2rem;
+}
+
+.nameText {
+}

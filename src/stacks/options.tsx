@@ -1,7 +1,7 @@
 import { NativeStackNavigationOptions } from "@react-navigation/native-stack";
 import { TouchableOpacity } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import styles from "./stackOptions.scss";
+import styles from "./options.scss";
 
 export function createScreenOptions(navigation:any): NativeStackNavigationOptions {
     return {
