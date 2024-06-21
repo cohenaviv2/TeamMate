@@ -4,8 +4,8 @@ import { set, ref, get, child, DataSnapshot } from "firebase/database";
 import { IUser } from "../common/types";
 import { AuthUser } from "../context/AuthProvider";
 
-export const AuthService = {
-  async register(user: IUser): Promise<AuthUser> {
+class AuthService  {
+  static async register(user: IUser): Promise<AuthUser> {
     try {
       const credentials = await createUserWithEmailAndPassword(Firebase.auth, user.email, user.password);
       const uid = credentials.user.uid;
@@ -20,9 +20,9 @@ export const AuthService = {
       console.log(error);
       throw error;
     }
-  },
+  }
 
-  async login(email: string, password: string): Promise<IUser> {
+  static async login(email: string, password: string): Promise<IUser> {
     try {
       const credentials = await signInWithEmailAndPassword(Firebase.auth, email, password);
       const userRef = ref(Firebase.db, `users/${credentials.user.uid}`);
@@ -33,13 +33,15 @@ export const AuthService = {
     } catch (error) {
       throw error;
     }
-  },
+  }
 
-  async logout() {
+  static async logout() {
     try {
       await Firebase.auth.signOut();
     } catch (error) {
       throw error;
     }
-  },
+  }
 };
+
+export default AuthService;

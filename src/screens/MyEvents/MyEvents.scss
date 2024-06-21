@@ -2,4 +2,48 @@
 
 .eventsBox {
   @extend .container;
+  gap: 1rem;
+  padding: 8px;
+}
+
+.titleBox {
+  @extend .hbox;
+  width: 100%;
+  padding: 8px 16px;
+}
+
+.titleText {
+  font-family: "Lato";
+  font-size: 28px;
+  width: 65%;
+}
+
+.listSwitchBox {
+  width: 35%;
+  margin-left: auto;
+}
+
+.mapBox {
+  width: 100%;
+  height: 80%;
+  border: 2px solid $background-dark;
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.listBox {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 70%;
+  background-color: rgb(235, 235, 235);
+  padding: 0 4px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
 }

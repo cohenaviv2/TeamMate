@@ -1,4 +1,4 @@
-import { ref, set, get, update, remove, push, query, orderByChild, startAt, endAt } from "firebase/database";
+import { ref, set, get, update, remove, push, query, orderByChild, startAt, endAt, equalTo } from "firebase/database";
 import { Firebase } from "../services/firebaseConfig";
 import { IEvent, SportType } from "../common/types";
 import moment from "moment";
@@ -95,7 +95,7 @@ class EventModel {
 
       const snapshot = await get(eventsQuery);
       const events: IEvent[] = [];
-      
+
       snapshot.forEach((childSnapshot) => {
         const event = childSnapshot.val() as IEvent;
         const eventDate = moment(event.dateTime);
@@ -104,9 +104,47 @@ class EventModel {
         }
       });
 
-      return events;
+      return events.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
     } catch (error) {
       console.error("Error fetching filtered events:", error);
+      throw error;
+    }
+  }
+
+  async getEventsByCreatorId(creatorId: string): Promise<IEvent[]> {
+    try {
+      const eventsQuery = query(ref(this.db, this.path), orderByChild("creator/id"), equalTo(creatorId));
+      const snapshot = await get(eventsQuery);
+      const events: IEvent[] = [];
+
+      snapshot.forEach((childSnapshot) => {
+        const event = childSnapshot.val() as IEvent;
+        events.push(event);
+      });
+
+      return events.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
+    } catch (error) {
+      console.error("Error fetching events by creator ID:", error);
+      throw error;
+    }
+  }
+
+  async getEventsByParticipantId(participantId: string): Promise<IEvent[]> {
+    try {
+      const eventsRef = ref(this.db, this.path);
+      const snapshot = await get(eventsRef);
+      const events: IEvent[] = [];
+
+      snapshot.forEach((childSnapshot) => {
+        const event = childSnapshot.val() as IEvent;
+        if (event.participants && event.participants[participantId]) {
+          events.push(event);
+        }
+      });
+
+      return events.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
+    } catch (error) {
+      console.error("Error fetching events by participant ID:", error);
       throw error;
     }
   }

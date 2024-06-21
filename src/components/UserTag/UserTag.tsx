@@ -1,13 +1,13 @@
 import { View, Text, Image } from 'react-native'
 import styles from "./UserTag.scss"
+import { IUserDetails } from '../../common/types'
 
 interface UserTagProps {
-    fullName:string;
-    imageUrl:string;
-    id:string;
+    user:IUserDetails;
 }
 
-export default function UserTag({fullName,imageUrl}:UserTagProps) {
+export default function UserTag({user}:UserTagProps) {
+  const {fullName,imageUrl,id} = user;
   return (
     <View style={styles.userBox}>
         <Image source={{uri:imageUrl}} style={styles.userImage} />

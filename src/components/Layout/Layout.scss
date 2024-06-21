@@ -11,8 +11,8 @@
   @extend .hbox;
   justify-content: center;
   background-color: $background;
-  // border-bottom-color: rgb(236, 236, 236);
-  // border-bottom-width: 2px;a
+  border-bottom-color: rgb(236, 236, 236);
+  border-bottom-width: 2px;
   height: 80px;
   width: 100%;
   gap: 1rem;

@@ -3,10 +3,10 @@ import { getDatabase } from "firebase/database";
 import { initializeAuth, getReactNativePersistence } from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 
-const apiKey = process.env.EXPO_PUBLIC_API_KEY;
-const projectId = process.env.EXPO_PUBLIC_PROJECT_ID;
-const databaseName = process.env.EXPO_PUBLIC_DATABASE_NAME;
-const appId = process.env.EXPO_PUBLIC_APP_ID;
+const apiKey = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
+const projectId = process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID;
+const databaseName = process.env.EXPO_PUBLIC_FIREBASE_DATABASE_NAME;
+const appId = process.env.EXPO_PUBLIC_FIREBASE_APP_ID;
 
 const firebaseConfig = {
   apiKey: apiKey,

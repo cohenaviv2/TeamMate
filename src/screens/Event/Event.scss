@@ -1,5 +1,172 @@
 @import "../../styles/variables.scss";
 
 .eventsBox {
-  @extend .container;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.newEventBox {
+  flex: 1;
+  gap: 1rem;
+  padding: 16px;
+  padding-bottom: 5rem;
+}
+
+.fieldBox {
+  @extend .vbox;
+  justify-content: center;
+  gap: 1rem;
+  min-width: 100%;
+  padding: 16px 12px;
+  background-color: $text;
+  border-radius: 12px;
+}
+
+.endFieldBox {
+  @extend .fieldBox;
+  margin-bottom: 32px;
+}
+
+.titleBox {
+  @extend .hbox;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.titleText {
+  font-family: "Lato";
+  font-size: 18px;
+  text-align: center;
+  // color: grey;
+}
+
+.eventTitleText {
+  @extend .titleText;
+  font-family: "Lato-Bold";
+}
+
+.userTagBox {
+  @extend .vbox;
+  justify-content: center;
+  background-color: $background;
+  padding: 8px;
+  border-radius: 12px;
+  min-width: 40%;
+}
+
+.markerIcon {
+  font-size: 18px;
+  color: rgb(234, 67, 53);
+}
+
+.mapBox {
+  min-width: 100%;
+  height: 18rem;
+  border: 2px solid $background-dark;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.map {
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.dateButton {
+  @extend .button;
+  flex-direction: column;
+  background-color: $primary-light;
+  border-radius: 12px;
+  padding: 10px 26px;
+}
+
+.dateText {
+  @extend .buttonText;
+  font-family: "Lato-Bold";
+  // color: $text;
+}
+
+.timeText {
+  @extend .dateText;
+  font-family: "Lato";
+}
+
+.timeButton {
+  @extend .dateButton;
+  background-color: $primary-dark;
+  padding: 10px 32px;
+}
+
+.timeBox {
+  @extend .vbox;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.dateTimeBox {
+  @extend .hbox;
+  gap: 1rem;
+}
+
+.dateIcon {
+  font-size: 18px;
+  color: $primary-dark;
+}
+
+.participantsIcon {
+  font-size: 20px;
+  color: $success;
+}
+
+.participantsCountBox {
+  @extend .vbox;
+  justify-content: center;
+  gap: 0.2rem;
+  border-radius: 12px;
+  padding: 8px;
+  background-color: $success;
+}
+
+.participantsListBox {
+  @extend .vbox;
+  justify-content: center;
+  width: 60%;
+  min-height: 5rem;
+  border-radius: 12px;
+  background-color: $background;
+}
+
+.noParticipantsText {
+  font-family: "Lato";
+  font-size: 16px;
+}
+
+.infoIcon {
+  font-size: 22px;
+  color: $background-dark;
+}
+
+.smallTitleText {
+  @extend .titleText;
+  font-size: 14px;
+  color: grey;
+}
+
+.infoBox {
+  @extend .vbox;
+  gap: 0.5rem;
+  background-color: $background;
+  padding: 12px 8px;
+  border-radius: 12px;
+  min-width: 90%;
+}
+
+.attendButton {
+  @extend .button;
+  background-color: $button;
+  padding: 16px;
+  width: 60%;
+  margin: 4px;
+  gap: 0.5rem;
 }

@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { Text, TextInput, Image, TouchableOpacity, View, Alert, KeyboardAvoidingView, ScrollView } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { AuthService } from "../../services/AuthService";
+
 import styles from "./Register.scss";
 import Spinner from "../../components/Spinner/Spinner";
 import SportSelect from "../../components/SportSelect/SportSelect";
 import { IUser, SportType, sportTypeList } from "../../common/types";
-import { uploadImage } from "../../services/cloudinaryService";
+
 import Octicons from '@expo/vector-icons/Octicons';
 import { launchImagePicker } from "../../utils/initialize";
+import CloudinaryService from "../../services/CloudinaryService";
+import AuthService from "../../services/AuthService";
 
 export default function RegisterScreen({ navigation }: { navigation: any }) {
   const [user, setUser] = useState<IUser>({
@@ -16,6 +18,7 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
     email: "",
     password: "",
     imageUrl: "",
+    id:"",
     favoriteSport: sportTypeList[0],
   });
   const [error, setError] = useState<unknown>(null);
@@ -33,7 +36,7 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
     }
     setLoading(true);
     try {
-      const imageUrl = await uploadImage(imageUri, "");
+      const imageUrl = await CloudinaryService.uploadImage(imageUri, "");
       await AuthService.register({
         ...user,
         imageUrl,
@@ -72,7 +75,7 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
               <TextInput style={styles.input} placeholder="Email" value={user.email} onChangeText={(val) => setUser({ ...user, email: val })} autoCapitalize="none" keyboardType="email-address" />
               <TextInput style={styles.input} placeholder="Password" value={user.password} onChangeText={(val) => setUser({ ...user, password: val })} secureTextEntry />
               <Text style={styles.favText}>Your Favorite Sport</Text>
-              <SportSelect theme="secondary" onChange={handleSportTypeChange} />
+              <SportSelect theme="secondary" onChange={handleSportTypeChange} vibrate/>
               <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
                 <Text style={styles.buttonText}>Register</Text>
               </TouchableOpacity>

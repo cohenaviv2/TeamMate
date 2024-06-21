@@ -1,35 +1,124 @@
 @import "../../../styles/variables.scss";
 
 .eventListItem {
-  @extend .vbox;
+  @extend .hbox;
   justify-content: center;
   background-color: $text;
+  border-radius: 12px;
+  margin: 4px 0;
   min-width: 100%;
-  height: 8rem;
-  padding: 8px 16px;
-  border: 1px solid $background-dark;
+  height: 7.5rem;
+  padding: 12px;
+}
+
+.dateTimeBox {
+  @extend .vbox;
+  justify-content: center;
+  height: 100%;
+  width: 20%;
+  gap: 0.3rem;
+  margin-right: auto;
+}
+
+.dateText {
+  color: $text;
+  font-family: "Lato-Bold";
+}
+
+.timeText {
+  @extend .dateText;
+  font-family: "Lato";
+}
+
+.dateBox {
+  @extend .vbox;
+  justify-content: center;
+  padding: 4px;
+  width: 90%;
+  background-color: $primary-light;
+  border-radius: 12px;
+}
+
+.timeBox {
+  @extend .dateBox;
+  background-color: $primary-dark;
+  border-radius: 8px;
+}
+
+.eventInfoBox {
+  @extend .vbox;
+  justify-content: center;
+  align-items: start;
+  height: 100%;
+  width: 75%;
+  // padding: 8px;
+  gap: 0.2rem;
+}
+
+.userBox {
+  @extend .vbox;
+  align-items: start;
+  height: 100%;
+  // background-color: red;
+  // padding: 4px;
+  width: 25%;
+  gap: 0.5rem;
 }
 
 .titleBox {
   @extend .hbox;
-  justify-content: center;
+  padding: 0 6px;
   gap: 0.5rem;
-  background-color: $background;
-  padding: 8px 16px;
   width: 100%;
-  border-radius: 12px;
-  margin-bottom: auto;
+  height: 28px;
+  overflow: hidden;
+}
+
+.titleText {
+  font-family: "Lato";
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eventTitleBox {
+  @extend .titleBox;
+  padding: 6px;
+  width: 80%;
+  border-radius: 8px;
+  background-color: $background;
+}
+
+.eventTitleText {
+  @extend .titleText;
+  font-family: "Lato-Bold";
+  font-size: 16px;
+}
+
+.titleIcon {
+  font-size: 22px;
+  color: gray;
+}
+
+.markerIcon {
+  font-size: 18px;
+  color: rgb(234, 67, 53);
+  margin-left: 3px;
+}
+
+.participantsIcon {
+  font-size: 20px;
+  color: $success;
+}
+
+.userTitleBox {
+  @extend .titleBox;
 }
 
 .userTagBox {
-  margin-right: auto;
-}
-
-.sportTypeBox {
-  @extend .hbox;
-  justify-content: center;
-  gap: 0.5rem;
+  // @extend .titleBox;
   margin-left: auto;
+  background-color: rgba(245, 245, 245, 0.849);
+  border-radius: 8px;
 }
-
-

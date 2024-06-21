@@ -14,7 +14,7 @@ const ScrollableList = <T extends unknown>({ data, renderItem, keyExtractor }: S
       data={data}
       renderItem={renderItem}
       keyExtractor={keyExtractor}
-      contentContainerStyle={styles.listContainer} // Optional: Add your own styling here
+      contentContainerStyle={styles.list}
     />
   );
 };

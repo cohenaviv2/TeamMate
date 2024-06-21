@@ -4,7 +4,7 @@ export interface IUser {
   password: string;
   imageUrl: string;
   favoriteSport: SportType;
-  id?: string;
+  id: string;
 }
 
 export type SportType = "All" | "Basketball" | "Baseball" | "Tennis" | "Football" | "Soccer" | "Hockey" | "Volleyball" | "Golf" | "Cycling";
@@ -15,27 +15,27 @@ export interface IEvent {
   sportType: SportType;
   title: string;
   dateTime: string;
-  imageUrl: string;
   location: {
-    name?: string;
+    name: string;
     latitude: number;
     longitude: number;
   };
   participants: {
     [participantId: string]: {
-      id: string;
-      fullName: string;
-      imageUrl: string;
+      user: IUserDetails;
     };
   };
-  creator: {
-    id: string;
-    fullName: string;
-    imageUrl: string;
-  };
+  creator: IUserDetails;
   createdAt: string;
+  imageUrl?: string;
   locationType?: "indoor" | "outdoor";
   participantsLimit?: number;
   description?: string;
-  id?: string;
+  id: string;
+}
+
+export interface IUserDetails {
+  id: string;
+  fullName: string;
+  imageUrl: string;
 }

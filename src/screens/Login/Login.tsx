@@ -1,8 +1,9 @@
-import { View, TouchableOpacity, Text, TextInput, Image, KeyboardAvoidingView, Alert } from "react-native";
+import { View, TouchableOpacity, Text, TextInput, Image, Alert } from "react-native";
 import { useState } from "react";
-import { AuthService } from "../../services/AuthService";
 import styles from "./Login.scss";
 import Spinner from "../../components/Spinner/Spinner";
+import Loading from "../Loading/Loading";
+import AuthService from "../../services/AuthService";
 
 export default function LoginScreen({ navigation }: { navigation: any }) {
   const [email, setEmail] = useState("");
@@ -29,7 +30,7 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
   return (
     <>
       {loading ? (
-        <Spinner size="l" />
+        <Loading spinnerSize="l"/>
       ) : (
         <View style={styles.loginLayout} >
           <View style={styles.logoBox}>

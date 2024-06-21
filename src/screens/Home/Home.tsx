@@ -1,5 +1,5 @@
 import { View, TouchableOpacity, Vibration, Text } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import Layout from "../../components/Layout/Layout";
 import MapView, { Marker } from "react-native-maps";
 import { IEvent, SportType } from "../../common/types";
@@ -11,6 +11,7 @@ import { AuthContext } from "../../context/AuthProvider";
 import EventModel from "../../models/EventModel";
 import ScrollableList from "../../components/List/List";
 import EventListItem from "../../components/List/EventListItem/EventListItem";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function HomeScreen({ navigation, location }: any) {
   const authContext = useContext(AuthContext);
@@ -22,7 +23,7 @@ export default function HomeScreen({ navigation, location }: any) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<any>();
 
-  async function handleFetchEvents(sportTypeFilter: SportType, dateFilter: "Month" | "Week" | "Today") {
+  const handleFetchEvents = useCallback(async (sportTypeFilter: SportType, dateFilter: "Month" | "Week" | "Today") => {
     setLoading(true);
     setError(null);
 
@@ -35,27 +36,37 @@ export default function HomeScreen({ navigation, location }: any) {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     handleFetchEvents(sportTypeFilter, dateFilter);
-  }, [sportTypeFilter, dateFilter]);
+  }, [sportTypeFilter, dateFilter, handleFetchEvents]);
 
-  const renderEventItem = ({ item }: { item: IEvent }) => <EventListItem event={item} />;
-  const keyExtractor = (item: IEvent) => item.id || "";
+  useFocusEffect(
+    useCallback(() => {
+      handleFetchEvents(sportTypeFilter, dateFilter);
+    }, [sportTypeFilter, dateFilter, handleFetchEvents])
+  );
+
+  const renderEventItem = ({ item }: { item: IEvent }) => <EventListItem event={item} onEventPress={(event) => navigation.navigate("Event", { event: item })} />;
+  const keyExtractor = (item: IEvent) => item.id;
 
   return (
     <Layout navigation={navigation} loading={loading}>
       <View style={styles.homeBox}>
         <View style={styles.menuBox}>
           <View style={styles.listSwitchBox}>
-            <ToggleSwitch onToggle={(filter) => setShowList(filter == "List")} labels={["Map", "List"]} showLabels={false} icons={[<FontAwesome5 name="map-marker-alt" size={20} />, <FontAwesome5 name="list" size={20} />]} />
+            <ToggleSwitch onToggle={(filter) => setShowList(filter === "List")} labels={["Map", "List"]} showLabels={false} icons={[<FontAwesome5 name="map-marker-alt" size={20} />, <FontAwesome5 name="list-ul" size={20} />]} />
           </View>
           <SportSelect initialVal={favoriteSportType} theme="secondary" onChange={(filter) => setSportTypeFilter(filter)} vibrate />
         </View>
-        <View style={styles.mapBox}>
+        <View style={showList ? styles.listBox : styles.mapBox}>
           {showList ? (
-            <ScrollableList data={events} renderItem={renderEventItem} keyExtractor={keyExtractor} />
+            events.length === 0 ? (
+              <Text style={styles.noEventsText}>No events found</Text>
+            ) : (
+              <ScrollableList data={events} renderItem={renderEventItem} keyExtractor={keyExtractor} />
+            )
           ) : (
             <MapView
               loadingBackgroundColor="#ffc000"

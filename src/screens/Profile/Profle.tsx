@@ -1,5 +1,5 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { AuthService } from "../../services/AuthService";
+import  AuthService  from "../../services/AuthService";
 import Layout from "../../components/Layout/Layout";
 import styles from "./Profle.scss";
 import { useContext } from "react";

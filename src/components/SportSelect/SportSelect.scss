@@ -1,6 +1,6 @@
 @import "./../../styles/variables.scss";
 
-$background-light:#e6e6e6;
+$background-light: #e6e6e6;
 
 .box {
   height: 45px;
@@ -15,20 +15,21 @@ $background-light:#e6e6e6;
   width: 80%;
   justify-content: center;
   height: 100%;
-  background-color: $primary-dark;
-  border: 2px solid $text;
-  border-radius: 16px;
+  background-color: $text;
+  border: 2px solid $background;
+  border-radius: 12px;
 }
 
 .sportBox2 {
   @extend .sportBox;
-  border:none;
+  border: none;
   background-color: $text;
 }
 
 .sportText {
   @extend .buttonText;
   font-size: 18px;
+  color: black;
   // color: $text;
 }
 
@@ -47,7 +48,7 @@ $background-light:#e6e6e6;
   font-size: 14px;
   margin-left: -16px;
   margin-right: -16px;
-  color: $primary-light;
+  color: $background-dark;
 }
 
 .buttonIcon2 {

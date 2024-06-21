@@ -3,7 +3,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AuthContext, AuthProvider } from "./context/AuthProvider";
 import UpcomingScreen from "./screens/Upcoming/Upcoming";
-import MyEventsScreen from "./screens/MyEvents/MyEvents";
 import ProfileScreen from "./screens/Profile/Profle";
 import styles from "./App.scss";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -12,6 +11,7 @@ import { HomeStack } from "./stacks/HomeStack";
 import { getImagePickerPermission, getLocationPermission, loadFonts } from "./utils/initialize";
 import { LocationObject } from "expo-location";
 import Loading from "./screens/Loading/Loading";
+import { MyEventsStack } from "./stacks/MyEventsStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -27,7 +27,7 @@ const MainTabNavigator = ({ location }: any) => (
           case "Upcoming":
             iconName = focused ? "calendar" : "calendar-outline";
             break;
-          case "MyEvents":
+          case "MyEventsStack":
             iconName = focused ? "body" : "body-outline";
             break;
           case "Profile":
@@ -46,7 +46,7 @@ const MainTabNavigator = ({ location }: any) => (
   >
     <Tab.Screen name="HomeStack">{() => <HomeStack location={location} />}</Tab.Screen>
     <Tab.Screen name="Upcoming" component={UpcomingScreen} />
-    <Tab.Screen name="MyEvents" component={MyEventsScreen} />
+    <Tab.Screen name="MyEventsStack">{() => <MyEventsStack location={location} />}</Tab.Screen>
     <Tab.Screen name="Profile" component={ProfileScreen} />
   </Tab.Navigator>
 );
@@ -61,7 +61,9 @@ const App = () => {
   useEffect(() => {
     const loadAppResources = async () => {
       try {
+        // Load fonts
         await loadFonts();
+        setFontsLoaded(true);
         // Get location permission
         const locationData = await getLocationPermission();
         setLocation(locationData);
@@ -69,20 +71,17 @@ const App = () => {
         // Get image picker permission
         const imagePermission = await getImagePickerPermission();
         setImagePermissionGranted(imagePermission);
-
-        setFontsLoaded(true);
       } catch (error) {
         console.error("Error loading app resources:", error);
         setLocationPermissionGranted(false);
         setFontsLoaded(true);
       }
     };
-
     loadAppResources();
   }, []);
 
   if (!authContext) {
-    return <Loading spinnerSize="l" />
+    return <Loading spinnerSize="l" />;
   }
 
   const { currentUser, loading, error } = authContext;
