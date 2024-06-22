@@ -1,0 +1,26 @@
+@import "../../styles/variables.scss";
+
+.loadingBox {
+  @extend .vbox;
+  gap: 1rem;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.spinnerBox {
+  @extend .vbox;
+  justify-content: center;
+  height: 3rem;
+  width: 3rem;
+}
+
+.successIcon {
+  font-size: 38px;
+  color: $success;
+}
+
+.logo {
+  width: 50%;
+  height: 45px;
+}

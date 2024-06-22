@@ -4,13 +4,14 @@ import styles from "./ToggleSwitch.scss";
 
 interface ToggleSwitchProps {
   labels: string[];
-  showLabels:boolean;
+  showLabels: boolean;
   icons?: React.JSX.Element[];
   onToggle: (label: string) => void;
+  initValue?: string;
 }
 
-const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ onToggle, labels, icons, showLabels }) => {
-  const [selectedLabel, setSelectedLabel] = useState<string>(labels[0]);
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ onToggle, labels, icons, showLabels,initValue }) => {
+  const [selectedLabel, setSelectedLabel] = useState<string>(initValue || labels[0]);
 
   const toggleSwitch = (label: string) => {
     setSelectedLabel(label);

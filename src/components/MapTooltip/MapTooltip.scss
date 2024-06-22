@@ -1,0 +1,12 @@
+@import "../../styles/variables.scss";
+
+.calloutContainer {
+  @extend .vbox;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 8px;
+}
+
+.calloutDescription {
+  font-family: "Lato";
+}

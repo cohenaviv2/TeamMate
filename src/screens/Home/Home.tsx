@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, Vibration, Text } from "react-native";
 import React, { useContext, useEffect, useState, useCallback } from "react";
 import Layout from "../../components/Layout/Layout";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Callout, Marker } from "react-native-maps";
 import { IEvent, SportType } from "../../common/types";
 import { FontAwesome5 } from "@expo/vector-icons";
 import SportSelect from "../../components/SportSelect/SportSelect";
@@ -12,6 +12,8 @@ import EventModel from "../../models/EventModel";
 import ScrollableList from "../../components/List/List";
 import EventListItem from "../../components/List/EventListItem/EventListItem";
 import { useFocusEffect } from "@react-navigation/native";
+import { sportTypeIconMap } from "../../components/SportSelect/data";
+import MapTooltip from "../../components/MapTooltip/MapTooltip";
 
 export default function HomeScreen({ navigation, location }: any) {
   const authContext = useContext(AuthContext);
@@ -37,6 +39,10 @@ export default function HomeScreen({ navigation, location }: any) {
       setLoading(false);
     }
   }, []);
+
+    const handleMarkerPress = (event:IEvent) => {
+      navigation.navigate("Event", { event });
+    };
 
   useEffect(() => {
     handleFetchEvents(sportTypeFilter, dateFilter);
@@ -80,7 +86,11 @@ export default function HomeScreen({ navigation, location }: any) {
               showsUserLocation={true}
             >
               {events.map((event) => (
-                <Marker key={event.id} coordinate={{ latitude: event.location.latitude, longitude: event.location.longitude }} title={event.title} description={event.sportType} />
+                <Marker key={event.id} coordinate={{ latitude: event.location.latitude, longitude: event.location.longitude }} title={event.title} description={event.sportType}>
+                  <Callout onPress={() => handleMarkerPress(event)}>
+                    <MapTooltip sportType={event.sportType} title={event.title} />
+                  </Callout>
+                </Marker>
               ))}
             </MapView>
           )}

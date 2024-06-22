@@ -199,24 +199,6 @@
   font-size: 14px;
 }
 
-.spinnerBox {
-  @extend .vbox;
-  gap: 1.5rem;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-}
-
-.successIcon {
-  font-size: 38px;
-  color: $success;
-}
-
-.logo {
-  width: 50%;
-  height: 45px;
-}
-
 .markerIcon {
   font-size: 18px;
   color: rgb(234, 67, 53);

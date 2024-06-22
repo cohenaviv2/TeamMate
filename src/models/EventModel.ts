@@ -1,6 +1,6 @@
 import { ref, set, get, update, remove, push, query, orderByChild, startAt, endAt, equalTo } from "firebase/database";
 import { Firebase } from "../services/firebaseConfig";
-import { IEvent, SportType } from "../common/types";
+import { IEvent, IUserDetails, SportType } from "../common/types";
 import moment from "moment";
 
 class EventModel {
@@ -40,7 +40,25 @@ class EventModel {
   async updateEvent(id: string, updatedEvent: Partial<IEvent>): Promise<void> {
     try {
       const eventRef = ref(this.db, `${this.path}/${id}`);
-      await update(eventRef, updatedEvent);
+
+      // Fetch the current event data
+      const snapshot = await get(eventRef);
+      if (!snapshot.exists()) {
+        throw new Error("Event not found");
+      }
+      const currentEvent = snapshot.val() as IEvent;
+
+      // Determine which fields need to be removed
+      const fieldsToRemove = Object.keys(currentEvent).filter((key) => !(key in updatedEvent)) as (keyof IEvent)[];
+
+      // Create an update object including null values for fields to be removed
+      const updateData: Partial<IEvent> = { ...updatedEvent };
+      for (const field of fieldsToRemove) {
+        updateData[field] = null as any;
+      }
+
+      // Update the event in the database
+      await update(eventRef, updateData);
     } catch (error) {
       console.error("Error updating event:", error);
       throw error;
@@ -122,7 +140,7 @@ class EventModel {
         events.push(event);
       });
 
-      return events.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
+      return events.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     } catch (error) {
       console.error("Error fetching events by creator ID:", error);
       throw error;
@@ -145,6 +163,58 @@ class EventModel {
       return events.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
     } catch (error) {
       console.error("Error fetching events by participant ID:", error);
+      throw error;
+    }
+  }
+
+  async attendEvent(eventId: string, participantDetails: IUserDetails): Promise<void> {
+    try {
+      const eventRef = ref(this.db, `${this.path}/${eventId}`);
+      const snapshot = await get(eventRef);
+
+      if (!snapshot.exists()) {
+        throw new Error("Event does not exist");
+      }
+
+      const event = snapshot.val() as IEvent;
+      const participants = event.participants || {};
+
+      if (participants[participantDetails.id]) {
+        throw new Error("Participant already attending this event");
+      }
+
+      if (event.participantsLimit && Object.keys(participants).length >= event.participantsLimit) {
+        throw new Error("Event is already full");
+      }
+
+      participants[participantDetails.id] = { user: participantDetails };
+      await update(eventRef, { participants });
+    } catch (error) {
+      console.error("Error attending event:", error);
+      throw error;
+    }
+  }
+
+  async unAttendEvent(eventId: string, participantId: string): Promise<void> {
+    try {
+      const eventRef = ref(this.db, `${this.path}/${eventId}`);
+      const snapshot = await get(eventRef);
+
+      if (snapshot.exists()) {
+        const event = snapshot.val() as IEvent;
+
+        if (event.participants && event.participants[participantId]) {
+          delete event.participants[participantId]; // Remove the participant
+
+          await update(eventRef, { participants: event.participants });
+        } else {
+          throw new Error("Participant not found in the event");
+        }
+      } else {
+        throw new Error("Event not found");
+      }
+    } catch (error) {
+      console.error("Error un-attending event:", error);
       throw error;
     }
   }

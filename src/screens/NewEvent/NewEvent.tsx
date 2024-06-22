@@ -18,6 +18,7 @@ import CloudinaryService from "../../services/CloudinaryService";
 import moment from "moment";
 import Spinner from "../../components/Spinner/Spinner";
 import WeatherService from "../../services/WeatherService";
+import LoadingBox from "../../components/LoadingBox/LoadingBox";
 
 const NewEventScreen = ({ navigation, location }: any) => {
   const authContext = useContext(AuthContext);
@@ -53,7 +54,7 @@ const NewEventScreen = ({ navigation, location }: any) => {
   const [loading, setLoading] = useState(false);
   const [weather, setWeather] = useState<any>(null);
 
-  useEffect(()=>console.log(formState),[formState])
+  // useEffect(()=>console.log(formState),[formState])
 
   // useEffect(() => {
   //   async function fetchWeather() {
@@ -137,7 +138,7 @@ const NewEventScreen = ({ navigation, location }: any) => {
         }
       });
       const camelCaseKey = camelCaseParts.join("");
-      errors[camelCaseKey] = undefined;
+      if (errors[camelCaseKey]) validate();
     }
   };
 
@@ -145,7 +146,7 @@ const NewEventScreen = ({ navigation, location }: any) => {
     const newErrors: any = {};
     if (!formState.title) newErrors.title = "Title is required";
     if (!formState.location.name) newErrors.locationName = "Location name is required";
-    if (!formState.location.longitude) newErrors.location = "Location is required";
+    if (!marker) newErrors.location = "Location is required";
     setErrors(newErrors);
     return Object.keys(newErrors).find((error) => error !== undefined) === undefined;
   };
@@ -190,144 +191,138 @@ const NewEventScreen = ({ navigation, location }: any) => {
     }
   };
 
-  if (loading)
-    return (
-      <View style={styles.spinnerBox}>
-        <Image source={require("../../assets/images/logo2.png")} style={styles.logo} />
-        {success ? <Octicons name="check-circle-fill" style={styles.successIcon} /> : <Spinner size="l" theme="primary" />}
-      </View>
-    );
+  if (loading) return <LoadingBox success={success} />;
   else
     return (
-        <ScrollView style={styles.newEventBox} contentContainerStyle={{ justifyContent: "center", alignItems: "center", gap: 16 }}>
-          <View style={[styles.fieldBox, shadowStyles.shadow]}>
-            <View style={styles.sportTypeBox}>
-              <Text style={styles.titleText}>New Event</Text>
-              <SportSelect excludeAllOption theme="primary" onChange={(value) => handleChange("sportType", value)} vibrate />
-            </View>
-            <TextInput placeholder="Event Title..." style={errors.title !== undefined ? styles.errorInput : styles.input} value={formState.title} onChangeText={(value) => handleChange("title", value)} />
-            {/* {errors.title !== undefined && <Text style={styles.error}>{errors.title}</Text>} */}
+      <ScrollView style={styles.newEventBox} contentContainerStyle={{ justifyContent: "center", alignItems: "center", gap: 16 }}>
+        <View style={[styles.fieldBox, shadowStyles.shadow]}>
+          <View style={styles.sportTypeBox}>
+            <Text style={styles.titleText}>New Event</Text>
+            <SportSelect excludeAllOption theme="secondary" onChange={(value) => handleChange("sportType", value)} vibrate />
           </View>
+          <TextInput placeholder="Event Title..." style={errors.title !== undefined ? styles.errorInput : styles.input} value={formState.title} onChangeText={(value) => handleChange("title", value)} />
+          {/* {errors.title !== undefined && <Text style={styles.error}>{errors.title}</Text>} */}
+        </View>
 
-          <View style={[styles.fieldBox, shadowStyles.shadow]}>
-            <View style={styles.titleBox}>
-              <FontAwesome5 name="map-marker-alt" style={styles.markerIcon} />
-              <Text style={styles.titleText}>Loaction</Text>
-            </View>
-            <View style={errors.location ? styles.errorMapBox : styles.mapBox}>
-              {location && (
-                <MapView
-                  loadingBackgroundColor="#ffc000"
-                  style={styles.map}
-                  initialRegion={{
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
-                  }}
-                  showsUserLocation={true}
-                  onLongPress={handleMapLongPress}
-                >
-                  {marker && <Marker coordinate={marker} title={formState.title} />}
-                </MapView>
-              )}
-            </View>
-            {errors.location !== undefined && <Text style={styles.error}>{errors.location}</Text>}
-            <TextInput
-              placeholder="Location name..."
-              style={errors.locationName !== undefined ? styles.errorInput : styles.input}
-              value={formState.location.name}
-              onChangeText={(value) => handleChange("location.name", value === "" ? undefined : value)}
-            />
-            {/* {errors.locationName !== undefined && <Text style={styles.error}>{errors.locationName}</Text>} */}
+        <View style={[styles.fieldBox, shadowStyles.shadow]}>
+          <View style={styles.titleBox}>
+            <FontAwesome5 name="map-marker-alt" style={styles.markerIcon} />
+            <Text style={styles.titleText}>Loaction</Text>
           </View>
-
-          <View style={[styles.fieldBox, shadowStyles.shadow]}>
-            <View style={styles.titleBox}>
-              <Ionicons name="calendar" style={styles.dateIcon} />
-              <Text style={styles.titleText}>Date & Time</Text>
-            </View>
-            <View style={styles.dateTimeBox}>
-              <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
-                <Text style={[styles.dateText, { fontSize: 18 }]}>{moment(new Date()).format("MMM")}</Text>
-                <Text style={[styles.dateText, { fontSize: 38 }]}>{moment(new Date()).format("D")}</Text>
-                <Text style={[styles.timeText, { fontSize: 14 }]}>{moment(new Date()).format("YYYY")}</Text>
-              </TouchableOpacity>
-              {showDatePicker && <DateTimePicker value={new Date(formState.dateTime)} mode="date" display="default" onChange={handleDateChange} />}
-
-              <View style={styles.timeBox}>
-                <View style={styles.weatherBox}>
-                  {weather ? (
-                    <>
-                      <Text style={styles.timeText}>{weather.temp}°C</Text>
-                    </>
-                  ) : (
-                    <Spinner size="m" />
-                  )}
-                </View>
-                <TouchableOpacity style={styles.timeButton} onPress={() => setShowTimePicker(true)}>
-                  <Text style={styles.timeText}>{new Date(formState.dateTime).toTimeString().substring(0, 5)}</Text>
-                </TouchableOpacity>
-                {showTimePicker && <DateTimePicker value={new Date(formState.dateTime)} mode="time" display="inline" onChange={handleTimeChange} />}
-              </View>
-            </View>
-          </View>
-
-          <Text style={[styles.titleText, { margin: 16, color: "grey" }]}>Optional</Text>
-
-          <View style={[styles.fieldBox, shadowStyles.shadow]}>
-            <View style={styles.titleBox}>
-              <Ionicons name="people-sharp" style={styles.participantsIcon} />
-              <Text style={styles.titleText}>Event Details</Text>
-            </View>
-            <View style={styles.typeBox}>
-              <Text style={styles.smallTitleText}>Num of Participants:</Text>
-            </View>
-            <View style={{ width: 170,height:40 }}>
-              <NumberInput
-                min={2}
-                max={30}
-                initialVal={"No Limit"}
-                onChange={(value) => {
-                  handleChange("participantsLimit", value);
+          <View style={errors.location ? styles.errorMapBox : styles.mapBox}>
+            {location && (
+              <MapView
+                loadingBackgroundColor="#ffc000"
+                style={styles.map}
+                initialRegion={{
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
                 }}
-              />
-            </View>
-            <View style={styles.typeBox}>
-              <Text style={styles.smallTitleText}>Location Type:</Text>
-            </View>
-            <View>
-              <ToggleSwitch onToggle={(value) => handleChange("locationType", value)} labels={["None", "Outdoor", "Indoor"]} showLabels />
-            </View>
+                showsUserLocation={true}
+                onLongPress={handleMapLongPress}
+              >
+                {marker && <Marker coordinate={marker} title={formState.title} />}
+              </MapView>
+            )}
+          </View>
+          {errors.location !== undefined && <Text style={styles.error}>{errors.location}</Text>}
+          <TextInput
+            placeholder="Location name..."
+            style={errors.locationName !== undefined ? styles.errorInput : styles.input}
+            value={formState.location.name}
+            onChangeText={(value) => handleChange("location.name", value === "" ? undefined : value)}
+          />
+          {/* {errors.locationName !== undefined && <Text style={styles.error}>{errors.locationName}</Text>} */}
+        </View>
 
-            <View style={styles.typeBox}>
-              <Text style={styles.smallTitleText}>Loaction Image:</Text>
-            </View>
-            <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker}>
-              {imageUri ? (
-                <Image source={{ uri: imageUri }} style={styles.image} />
-              ) : (
-                <View style={styles.imgBox}>
-                  <Octicons name="image" style={styles.imgIcon} />
-                  <Text style={styles.imgBtnText}>Choose image</Text>
-                </View>
-              )}
+        <View style={[styles.fieldBox, shadowStyles.shadow]}>
+          <View style={styles.titleBox}>
+            <Ionicons name="calendar" style={styles.dateIcon} />
+            <Text style={styles.titleText}>Date & Time</Text>
+          </View>
+          <View style={styles.dateTimeBox}>
+            <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
+              <Text style={[styles.dateText, { fontSize: 18 }]}>{moment(new Date()).format("MMM")}</Text>
+              <Text style={[styles.dateText, { fontSize: 38 }]}>{moment(new Date()).format("D")}</Text>
+              <Text style={[styles.timeText, { fontSize: 14 }]}>{moment(new Date()).format("YYYY")}</Text>
             </TouchableOpacity>
-            {errors.imageUrl !== undefined && <Text style={styles.error}>{errors.imageUrl}</Text>}
-            <TextInput
-              placeholder="Description"
-              multiline
-              numberOfLines={8}
-              style={[styles.input, { textAlignVertical: "top" }]}
-              value={formState.description}
-              onChangeText={(value) => handleChange("description", value === "" ? undefined : value)}
+            {showDatePicker && <DateTimePicker value={new Date(formState.dateTime)} mode="date" display="default" onChange={handleDateChange} />}
+
+            <View style={styles.timeBox}>
+              <View style={styles.weatherBox}>
+                {weather ? (
+                  <>
+                    <Text style={styles.timeText}>{weather.temp}°C</Text>
+                  </>
+                ) : (
+                  <Spinner size="m" />
+                )}
+              </View>
+              <TouchableOpacity style={styles.timeButton} onPress={() => setShowTimePicker(true)}>
+                <Text style={styles.timeText}>{new Date(formState.dateTime).toTimeString().substring(0, 5)}</Text>
+              </TouchableOpacity>
+              {showTimePicker && <DateTimePicker value={new Date(formState.dateTime)} mode="time" display="inline" onChange={handleTimeChange} />}
+            </View>
+          </View>
+        </View>
+
+        <Text style={[styles.titleText, { margin: 16, color: "grey" }]}>Optional</Text>
+
+        <View style={[styles.fieldBox, shadowStyles.shadow]}>
+          <View style={styles.titleBox}>
+            <Ionicons name="people-sharp" style={styles.participantsIcon} />
+            <Text style={styles.titleText}>Event Details</Text>
+          </View>
+          <View style={styles.typeBox}>
+            <Text style={styles.smallTitleText}>Number of Participants</Text>
+          </View>
+          <View style={{ width: 170, height: 40 }}>
+            <NumberInput
+              min={2}
+              max={30}
+              initialVal={"No Limit"}
+              onChange={(value) => {
+                handleChange("participantsLimit", value);
+              }}
             />
           </View>
+          <View style={styles.typeBox}>
+            <Text style={styles.smallTitleText}>Location Type</Text>
+          </View>
+          <View>
+            <ToggleSwitch onToggle={(value) => handleChange("locationType", value)} labels={["None", "Outdoor", "Indoor"]} showLabels />
+          </View>
+
+          <View style={styles.typeBox}>
+            <Text style={styles.smallTitleText}>Loaction Image</Text>
+          </View>
+          <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker}>
+            {imageUri ? (
+              <Image source={{ uri: imageUri }} style={styles.image} />
+            ) : (
+              <View style={styles.imgBox}>
+                <Octicons name="image" style={styles.imgIcon} />
+                <Text style={styles.imgBtnText}>Choose image</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+          {errors.imageUrl !== undefined && <Text style={styles.error}>{errors.imageUrl}</Text>}
+          <TextInput
+            placeholder="Description"
+            multiline
+            numberOfLines={8}
+            style={[styles.input, { textAlignVertical: "top" }]}
+            value={formState.description}
+            onChangeText={(value) => handleChange("description", value === "" ? undefined : value)}
+          />
+        </View>
         <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
           <FontAwesome5 name="plus" style={styles.submitIcon} />
           <Text style={styles.buttonText}>Create Event</Text>
         </TouchableOpacity>
-        </ScrollView>
+      </ScrollView>
     );
 };
 

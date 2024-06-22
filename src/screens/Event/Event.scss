@@ -6,6 +6,12 @@
   align-items: center;
 }
 
+.scrollBox {
+  justify-content: "center";
+  align-items: "center";
+  gap: 1rem;
+}
+
 .newEventBox {
   flex: 1;
   gap: 1rem;
@@ -32,6 +38,7 @@
   @extend .hbox;
   justify-content: center;
   gap: 0.5rem;
+  min-height: 32px;
 }
 
 .titleText {
@@ -46,6 +53,14 @@
   font-family: "Lato-Bold";
 }
 
+.userBox {
+  @extend .hbox;
+  justify-content: center;
+  padding: 8px;
+  gap: 0.5rem;
+  min-width: 85%;
+}
+
 .userTagBox {
   @extend .vbox;
   justify-content: center;
@@ -53,6 +68,7 @@
   padding: 8px;
   border-radius: 12px;
   min-width: 40%;
+  margin-right: auto;
 }
 
 .markerIcon {
@@ -128,6 +144,17 @@
   background-color: $success;
 }
 
+.participantsLimitText {
+  @extend .dateText;
+  color: rgb(170, 241, 170);
+}
+
+.numOfParticipantsBox {
+  @extend .hbox;
+  margin-top: auto;
+  gap: 0.3rem;
+}
+
 .participantsListBox {
   @extend .vbox;
   justify-content: center;
@@ -143,8 +170,8 @@
 }
 
 .infoIcon {
-  font-size: 22px;
-  color: $background-dark;
+  font-size: 20px;
+  color: $button;
 }
 
 .smallTitleText {
@@ -164,9 +191,115 @@
 
 .attendButton {
   @extend .button;
-  background-color: $button;
+  background-color: $success;
   padding: 16px;
   width: 60%;
   margin: 4px;
   gap: 0.5rem;
+}
+
+.attendButtonIcon {
+  font-size: 22px;
+  color: $text;
+}
+
+.unattendBox {
+  @extend .hbox;
+  justify-content: center;
+  gap: 0.2rem;
+}
+
+.unattendButton {
+  @extend .attendButton;
+  background-color: $danger;
+  width: 30%;
+  margin-left: 1rem;
+}
+
+.unattendInfoIcon {
+  font-size: 18px;
+  color: grey;
+}
+
+.deleteButtonBox {
+  @extend .vbox;
+  justify-content: center;
+  width: 100%;
+  padding: 8px;
+}
+
+.editButton {
+  @extend .attendButton;
+  background-color: $background-dark;
+}
+
+.deleteButton {
+  @extend .attendButton;
+  background-color: rgb(234, 67, 53);
+  margin-bottom: 32px;
+}
+
+.buttonIcon {
+  font-size: 16px;
+  color: $text;
+}
+
+.editButtonBox {
+  @extend .deleteButtonBox;
+  padding: 0;
+}
+
+.imgBox {
+  @extend .hbox;
+  position: absolute;
+  justify-content: center;
+  gap: 0.5rem;
+  // padding: 8px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.image {
+  min-width: 100%;
+  height: 100%;
+}
+
+.imgButton {
+  @extend .vbox;
+  justify-content: center;
+  min-width: 80%;
+  height: 12rem;
+  background-color: $background-dark;
+  border-radius: 16px;
+  overflow: hidden;
+  // margin-bottom: 1rem;
+}
+
+.imgIcon {
+  color: $text;
+  font-size: 32px;
+}
+
+.imgBtnText {
+  @extend .buttonText;
+  font-size: 14px;
+}
+
+.saveButton {
+  @extend .deleteButton;
+  background-color: $success;
+  width: 60%;
+}
+
+.cancelButton {
+  @extend .editButton;
+  width: 50px;
+  height: 50px;
+  border-radius: 100px;
+  padding: 0;
+}
+
+.cancelIcon {
+  font-size: 26px;
+  color: $text;
 }

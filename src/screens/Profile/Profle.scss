@@ -2,6 +2,29 @@
 
 .profileBox {
   @extend .container;
+  gap: 1rem;
+  padding: 8px;
+}
+
+.titleBox {
+  @extend .hbox;
+  width: 100%;
+  padding: 8px 16px;
+}
+
+.titleText {
+  font-family: "Lato";
+  font-size: 28px;
+  width: 65%;
+}
+
+.listSwitchBox {
+  width: 35%;
+  margin-left: auto;
+}
+
+.profileBox {
+  @extend .container;
   width: 100%;
   gap: 1rem;
   margin-top: 1rem;
@@ -88,7 +111,7 @@
 }
 
 .myEventsText {
-    @extend .favText;
-    font-size: 26px;
-    color: $primary-dark;
+  @extend .favText;
+  font-size: 26px;
+  color: $primary-dark;
 }

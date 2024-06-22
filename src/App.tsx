@@ -12,6 +12,7 @@ import { getImagePickerPermission, getLocationPermission, loadFonts } from "./ut
 import { LocationObject } from "expo-location";
 import Loading from "./screens/Loading/Loading";
 import { MyEventsStack } from "./stacks/MyEventsStack";
+import { UpcomingStack } from "./stacks/UpcomingStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -24,7 +25,7 @@ const MainTabNavigator = ({ location }: any) => (
           case "HomeStack":
             iconName = focused ? "home" : "home-outline";
             break;
-          case "Upcoming":
+          case "UpcomingStack":
             iconName = focused ? "calendar" : "calendar-outline";
             break;
           case "MyEventsStack":
@@ -45,7 +46,7 @@ const MainTabNavigator = ({ location }: any) => (
     })}
   >
     <Tab.Screen name="HomeStack">{() => <HomeStack location={location} />}</Tab.Screen>
-    <Tab.Screen name="Upcoming" component={UpcomingScreen} />
+    <Tab.Screen name="UpcomingStack">{() => <UpcomingStack location={location} />}</Tab.Screen>
     <Tab.Screen name="MyEventsStack">{() => <MyEventsStack location={location} />}</Tab.Screen>
     <Tab.Screen name="Profile" component={ProfileScreen} />
   </Tab.Navigator>

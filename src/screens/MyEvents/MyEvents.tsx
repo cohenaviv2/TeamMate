@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import Layout from "../../components/Layout/Layout";
 import styles from "./MyEvents.scss";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -7,10 +7,12 @@ import { IEvent } from "../../common/types";
 import ScrollableList from "../../components/List/List";
 import EventListItem from "../../components/List/EventListItem/EventListItem";
 import EventModel from "../../models/EventModel";
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Callout, Marker } from "react-native-maps";
 import { FontAwesome5 } from "@expo/vector-icons";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import { useFocusEffect } from "@react-navigation/native";
+import { sportTypeIconMap } from "../../components/SportSelect/data";
+import MapTooltip from "../../components/MapTooltip/MapTooltip";
 
 export default function MyEventsScreen({ navigation, location }: any) {
   const authContext = useContext(AuthContext);
@@ -46,7 +48,11 @@ export default function MyEventsScreen({ navigation, location }: any) {
     }, [])
   );
 
-  const renderEventItem = ({ item }: { item: IEvent }) => <EventListItem event={item} onEventPress={(item) => navigation.navigate("Event", { event: item })} />;
+  const handleMarkerPress = (event: IEvent) => {
+    navigation.navigate("MyEvent", { event });
+  };
+
+  const renderEventItem = ({ item }: { item: IEvent }) => <EventListItem event={item} onEventPress={(item) => navigation.navigate("MyEvent", { event: item })} />;
   const keyExtractor = (item: IEvent) => item.id || "";
 
   return (
@@ -79,10 +85,23 @@ export default function MyEventsScreen({ navigation, location }: any) {
             showsUserLocation={true}
           >
             {events.map((event) => (
-              <Marker key={event.id} coordinate={{ latitude: event.location.latitude, longitude: event.location.longitude }} title={event.title} description={event.sportType} />
+              <Marker key={event.id} coordinate={{ latitude: event.location.latitude, longitude: event.location.longitude }} title={event.title} description={event.sportType}>
+                <Callout onPress={() => handleMarkerPress(event)}>
+                  <MapTooltip sportType={event.sportType} title={event.title} />
+                </Callout>
+              </Marker>
             ))}
           </MapView>
         )}
+        <TouchableOpacity
+          style={styles.newEventButton}
+          onPress={() => {
+            // Vibration.vibrate(10);
+            navigation.navigate("NewEvent");
+          }}
+        >
+          <FontAwesome5 name="plus" size={20} style={styles.buttonText} />
+        </TouchableOpacity>
       </View>
     </Layout>
   );

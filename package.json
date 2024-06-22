@@ -30,6 +30,7 @@
     "moment": "^2.30.1",
     "react": "18.2.0",
     "react-native": "^0.74.2",
+    "react-native-calendars": "^1.1305.0",
     "react-native-dotenv": "^3.4.11",
     "react-native-fbsdk-next": "^13.0.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",

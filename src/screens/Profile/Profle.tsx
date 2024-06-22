@@ -2,10 +2,13 @@ import { Image, Text, TouchableOpacity, View } from "react-native";
 import  AuthService  from "../../services/AuthService";
 import Layout from "../../components/Layout/Layout";
 import styles from "./Profle.scss";
+import { FontAwesome5 } from "@expo/vector-icons";
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthProvider";
 import Spinner from "../../components/Spinner/Spinner";
 import SportSelect from "../../components/SportSelect/SportSelect";
+import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 
 export default function ProfileScreen({ navigation }: { navigation: any }) {
   const authContext = useContext(AuthContext);
@@ -24,6 +27,14 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
   return (
     <Layout navigation={navigation}>
       <View style={styles.profileBox}>
+        <View style={styles.titleBox}>
+          <Text style={styles.titleText}>My Profile</Text>
+          <View style={styles.listSwitchBox}>
+            <ToggleSwitch onToggle={(filter) =>{}} labels={["Calendar", "List"]} showLabels={false} icons={[<Ionicons name="calendar-outline" size={26} />, <FontAwesome5 name="list-ul" size={20} />]} />
+          </View>
+        </View>
+      </View>
+      {/* <View style={styles.profileBox}>
         <View style={styles.nameImageBox}>
           <View style={styles.imageBox}>
             <Image source={{ uri: user.imageUrl }} style={styles.image} />
@@ -41,7 +52,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </Layout>
   );
 }
