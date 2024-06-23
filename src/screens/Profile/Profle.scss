@@ -2,8 +2,21 @@
 
 .profileBox {
   @extend .container;
-  gap: 1rem;
   padding: 8px;
+  min-height: 5rem;
+}
+
+.scrollBox {
+  justify-content: "center";
+  align-items: "center";
+  gap: 1rem;
+}
+
+.profileScrollBox {
+  flex: 1;
+  gap: 1rem;
+  padding: 16px;
+  margin-top: -1rem;
 }
 
 .titleBox {
@@ -18,6 +31,12 @@
   width: 65%;
 }
 
+.labelText {
+  font-family: "Lato";
+  font-size: 18px;
+  text-align: center;
+}
+
 .listSwitchBox {
   width: 35%;
   margin-left: auto;
@@ -25,38 +44,40 @@
 
 .profileBox {
   @extend .container;
-  width: 100%;
   gap: 1rem;
-  margin-top: 1rem;
+  padding: 8px;
 }
 
-.logoutButton {
-  @extend .button;
-  background-color: rgb(223, 7, 7);
-  width: 50%;
-  padding: 12px;
-  margin-top: auto;
+.listBox {
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  min-height: 70%;
+  overflow: hidden;
 }
 
 .logoutText {
   @extend .buttonText;
 }
 
-.nameImageBox {
-  @extend .hbox;
+.fieldBox {
+  @extend .vbox;
   justify-content: center;
-  width: 95%;
-  height: 25%;
+  height: auto;
+  gap: 1rem;
+  min-width: 100%;
+  padding: 16px 12px;
+  background-color: $text;
   border-radius: 12px;
-  padding: 16px;
-  background-color: $box;
 }
 
 .imageBox {
   @extend .hbox;
   justify-content: center;
-  width: 30%;
-  height: 100%;
+  // width: 30%;
+  // height: 6rem;
 }
 
 .image {
@@ -69,17 +90,17 @@
 .nameBox {
   @extend .vbox;
   justify-content: center;
-  gap: 1rem;
-  height: 100%;
-  width: 70%;
+  gap: 0.5rem;
+  // height: 6rem;
+  // width: 60%;
 }
 
 .nameText {
   font-family: "Lato-Bold";
   color: $text;
+  text-align: center;
   font-size: 22px;
-  width: 90%;
-  padding: 10px 16px;
+  padding: 12px 32px;
   // text-align: center;
   border-radius: 8px;
   background-color: $primary-dark;
@@ -88,8 +109,14 @@
 .emailText {
   @extend .nameText;
   font-family: "Lato";
-  font-size: 20px;
-  background-color: $primary;
+  font-size: 16px;
+  color: grey;
+  background-color: $background;
+}
+
+.infoText {
+  @extend .emailText;
+  min-width: 50%;
 }
 
 .favBox {
@@ -110,8 +137,71 @@
   font-family: "Caveat-Bold";
 }
 
+.favSportBox {
+  @extend .hbox;
+  justify-content: center;
+  gap: 0.5rem;
+  background-color: $text;
+  padding: 12px 32px;
+  border-radius: 12px;
+}
+
 .myEventsText {
   @extend .favText;
   font-size: 26px;
   color: $primary-dark;
+}
+
+.editButton {
+  @extend .button;
+  background-color: $background-dark;
+  width: 60%;
+  gap: 0.5rem;
+  padding: 16px;
+  margin-top: 1rem;
+  margin-bottom: -1rem;
+}
+
+.buttonIcon {
+  font-size: 16px;
+  color: $text;
+}
+
+.logoutButton {
+  @extend .editButton;
+  background-color: $danger;
+  margin-top: 1rem;
+  margin-bottom: 3rem;
+}
+
+.saveButton {
+  @extend .logoutButton;
+  background-color: $success;
+  width: 60%;
+}
+
+.attendButtonIcon {
+  font-size: 22px;
+  color: $text;
+}
+
+.editButtonBox {
+  @extend .vbox;
+  justify-content: center;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 1rem;
+}
+
+.cancelButton {
+  @extend .editButton;
+  width: 50px;
+  height: 50px;
+  border-radius: 100px;
+  padding: 0;
+}
+
+.numberInputBox {
+  height: 2.5rem;
+  width: 50%;
 }

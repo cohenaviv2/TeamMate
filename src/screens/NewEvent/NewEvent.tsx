@@ -55,6 +55,7 @@ const NewEventScreen = ({ navigation, location }: any) => {
   const [weather, setWeather] = useState<any>(null);
 
   // useEffect(()=>console.log(formState),[formState])
+  
 
   // useEffect(() => {
   //   async function fetchWeather() {
@@ -276,7 +277,7 @@ const NewEventScreen = ({ navigation, location }: any) => {
             <Text style={styles.titleText}>Event Details</Text>
           </View>
           <View style={styles.typeBox}>
-            <Text style={styles.smallTitleText}>Number of Participants</Text>
+            <Text style={styles.smallTitleText}>Participants limit</Text>
           </View>
           <View style={{ width: 170, height: 40 }}>
             <NumberInput
@@ -298,7 +299,7 @@ const NewEventScreen = ({ navigation, location }: any) => {
           <View style={styles.typeBox}>
             <Text style={styles.smallTitleText}>Loaction Image</Text>
           </View>
-          <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker}>
+          <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker} activeOpacity={0.8}>
             {imageUri ? (
               <Image source={{ uri: imageUri }} style={styles.image} />
             ) : (

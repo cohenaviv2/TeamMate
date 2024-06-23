@@ -8,6 +8,11 @@
   width: 100%;
 }
 
+.primaryLoadingBox {
+  @extend .loadingBox;
+  background-color: $primary;
+}
+
 .spinnerBox {
   @extend .vbox;
   justify-content: center;

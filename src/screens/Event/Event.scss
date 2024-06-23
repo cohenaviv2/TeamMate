@@ -22,6 +22,7 @@
 .fieldBox {
   @extend .vbox;
   justify-content: center;
+  height: auto;
   gap: 1rem;
   min-width: 100%;
   padding: 16px 12px;
@@ -39,6 +40,14 @@
   justify-content: center;
   gap: 0.5rem;
   min-height: 32px;
+}
+
+.eventTitleBox {
+  @extend .titleBox;
+  background-color: $background-light;
+  padding: 12px;
+  width: 100%;
+  border-radius: 12px;
 }
 
 .titleText {
@@ -64,7 +73,8 @@
 .userTagBox {
   @extend .vbox;
   justify-content: center;
-  background-color: $background;
+  background-color: $text;
+  // border:2px solid $background;
   padding: 8px;
   border-radius: 12px;
   min-width: 40%;
@@ -125,6 +135,12 @@
   gap: 1rem;
 }
 
+.participantsBox {
+  @extend .vbox;
+  gap: 1rem;
+  width: 100%;
+}
+
 .dateIcon {
   font-size: 18px;
   color: $primary-dark;
@@ -156,17 +172,34 @@
 }
 
 .participantsListBox {
-  @extend .vbox;
-  justify-content: center;
-  width: 60%;
+  // @extend .vbox;
+  // flex-wrap: wrap;
+  // justify-content: center;
+  width: 100%;
+  // gap: 1rem;
   min-height: 5rem;
   border-radius: 12px;
+  padding: 8px;
   background-color: $background;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 10px;
 }
 
 .noParticipantsText {
+  @extend .smallTitleText;
+  min-height: 100%;
   font-family: "Lato";
   font-size: 16px;
+}
+
+.participantTagBox {
+  @extend .vbox;
+  background-color: $text;
+  border-radius: 12px;
+  padding: 8px;
+  margin: 8px;
 }
 
 .infoIcon {
@@ -193,7 +226,7 @@
   @extend .button;
   background-color: $success;
   padding: 16px;
-  width: 60%;
+  width: 50%;
   margin: 4px;
   gap: 0.5rem;
 }
@@ -230,6 +263,7 @@
 
 .editButton {
   @extend .attendButton;
+  margin-bottom: 0.5rem;
   background-color: $background-dark;
 }
 
@@ -267,8 +301,8 @@
 .imgButton {
   @extend .vbox;
   justify-content: center;
-  min-width: 80%;
-  height: 12rem;
+  width: 20rem;
+  height: 14rem;
   background-color: $background-dark;
   border-radius: 16px;
   overflow: hidden;

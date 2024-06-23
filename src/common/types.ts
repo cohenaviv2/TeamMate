@@ -3,6 +3,8 @@ export interface IUser {
   email: string;
   password: string;
   imageUrl: string;
+  age:number;
+  city:string;
   favoriteSport: SportType;
   id: string;
 }

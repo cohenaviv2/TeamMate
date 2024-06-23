@@ -12,7 +12,6 @@ import EventModel from "../../models/EventModel";
 import ScrollableList from "../../components/List/List";
 import EventListItem from "../../components/List/EventListItem/EventListItem";
 import { useFocusEffect } from "@react-navigation/native";
-import { sportTypeIconMap } from "../../components/SportSelect/data";
 import MapTooltip from "../../components/MapTooltip/MapTooltip";
 
 export default function HomeScreen({ navigation, location }: any) {

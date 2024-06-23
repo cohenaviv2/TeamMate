@@ -1,5 +1,5 @@
 import { Firebase } from "./firebaseConfig";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { set, ref, get, child, DataSnapshot } from "firebase/database";
 import { IUser } from "../common/types";
 import { AuthUser } from "../context/AuthProvider";
@@ -37,6 +37,7 @@ class AuthService  {
 
   static async logout() {
     try {
+      await signOut(Firebase.auth);
       await Firebase.auth.signOut();
     } catch (error) {
       throw error;

@@ -87,7 +87,9 @@ const App = () => {
 
   const { currentUser, loading, error } = authContext;
 
-  useEffect(() => {}, [loading, currentUser]);
+  useEffect(() => {
+    console.log("Current user: ", currentUser?.dbUser.fullName);
+  }, [currentUser]);
 
   if (!fontsLoaded || !locationPermissionGranted || !imagePermissionGranted || loading) {
     return <Loading spinnerSize="l" />;

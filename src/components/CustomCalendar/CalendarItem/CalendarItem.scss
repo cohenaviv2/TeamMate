@@ -1,0 +1,26 @@
+@import "../../../styles/variables.scss";
+
+.calendarItemBox {
+  @extend .hbox;
+  gap: 1rem;
+  width: 100%;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background-color: $background;
+}
+
+.titleText {
+  font-family: "Lato-Bold";
+}
+
+.timeBox {
+  background-color: $primary-dark;
+  padding: 8px 16px;
+  border-radius: 8px;
+  margin-left: auto;
+}
+
+.timeText {
+  font-family: "Lato-Bold";
+  color: $text;
+}

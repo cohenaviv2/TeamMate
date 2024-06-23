@@ -47,7 +47,7 @@ export default function EventListItem({ event, onEventPress }: EventListItemProp
           {event.participantsLimit && <Text style={styles.seperatorText}>/</Text>}
           {event.participantsLimit && <Text style={styles.seperatorText}>{event.participantsLimit}</Text>}
           {authContext && authContext.currentUser?.dbUser.id !== event.creator.id && (
-            <View style={styles.userTagBox}>
+            <View style={[styles.userTagBox, shadowStyles.darkShadow]}>
               <UserTag user={event.creator} />
             </View>
           )}
@@ -64,5 +64,12 @@ const shadowStyles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 1, // Android-specific property
+  },
+  darkShadow: {
+    shadowColor: "#555",
+    shadowOffset: { width: 5, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 3, // Android-specific property
   },
 });

@@ -51,7 +51,7 @@ export default function UpcomingScreen({ navigation }: { navigation: any }) {
   const keyExtractor = (item: IEvent) => item.id || "";
 
   return (
-    <Layout navigation={navigation}>
+    <Layout navigation={navigation} loading={loading}>
       <View style={styles.upcomingBox}>
         <View style={styles.titleBox}>
           <Text style={styles.titleText}>Upcoming</Text>
@@ -61,7 +61,15 @@ export default function UpcomingScreen({ navigation }: { navigation: any }) {
         </View>
       </View>
       <View style={showList ? styles.listBox : styles.calendarBox}>
-        {showList ? events.length === 0 ? <Text style={styles.noEventsText}>You are not attending any event</Text> : <ScrollableList data={events} renderItem={renderEventItem} keyExtractor={keyExtractor} /> : <CustomCalendar events={events} />}
+        {showList ? (
+          events.length === 0 ? (
+            <Text style={styles.noEventsText}>You are not attending any events</Text>
+          ) : (
+            <ScrollableList data={events} renderItem={renderEventItem} keyExtractor={keyExtractor} />
+          )
+        ) : (
+          <CustomCalendar events={events} onCalendarItemPress={(event) => navigation.navigate("UpcomingEvent", { event })} />
+        )}
       </View>
     </Layout>
   );

@@ -2,12 +2,12 @@
 
 .scrollBox {
   flex: 1;
+  margin-top: -1rem;
   background-color: $primary;
 }
 
 .registerBox {
   @extend .container;
-  gap: 3rem;
 }
 
 .formBox {
@@ -21,40 +21,9 @@
 
 .imgButton {
   @extend .button;
-  background-color: $primary-dark;
-  width: 45%;
-  gap: 0.5rem;
-  height: 2.5rem;
-  padding: 8px;
-}
-
-.imgIcon {
-  color: $text;
-  font-size: 20px;
-}
-
-.imgBtnText {
-  @extend .buttonText;
-  font-size: 14px;
-}
-
-.registerButton {
-  @extend .vbox;
-  justify-content: center;
-  padding: 8px;
-  border-radius: 8px;
-  font-size: 16px;
-  color: $text;
-  padding: 8px;
-  margin-top: 2rem;
-  background-color: $secondary;
-  width: 90%;
-  height: 3.5rem;
-}
-
-.imageBox {
   width: 120px;
   height: 120px;
+  padding: 4px;
   border-radius: 100px;
   background-color: $primary-light;
 }
@@ -65,9 +34,64 @@
   border-radius: 100px;
 }
 
+.imgIcon {
+  color: $primary-dark;
+  font-size: 26px;
+}
+
+.imgBtnText {
+  @extend .buttonText;
+  font-size: 14px;
+}
+
+.ageBox {
+  @extend .hbox;
+  justify-content: center;
+  height: auto;
+  gap: 1rem;
+  min-width: 80%;
+  padding: 12px 8px;
+  background-color: $text;
+  border-radius: 12px;
+}
+
+.titleText {
+  // font-family: "Lato";
+  font-size: 14px;
+  // min-width: 30%;
+  // text-align: center;
+  color: rgb(153, 153, 153);
+}
+
+.numberInputBox {
+  height: 2.5rem;
+  width: 50%;
+}
+
+.registerButton {
+  @extend .vbox;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 16px;
+  color: $text;
+  padding: 8px;
+  // margin-top: 1rem;
+  background-color: $secondary;
+  width: 70%;
+  height: 3.5rem;
+}
+
+.favBox {
+  @extend .hbox;
+  gap: 0.5rem;
+}
+
 .favText {
   font-size: 24px;
   color: $text;
+  // background-color: red;
+  min-height: 3rem;
   width: 100%;
   text-align: center;
   font-family: "Caveat-Bold";

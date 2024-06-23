@@ -83,24 +83,6 @@ export default function EventScreen({ navigation, location }: any) {
     handleFetchEvent();
   }, []);
 
-  async function handleUpdateEvent() {
-    if (formState) {
-      setLoading(true);
-      try {
-        await EventModel.updateEvent(eventId, formState);
-        await updateEventDetails();
-        setSuccess(true);
-        setTimeout(() => {
-          setSuccess(false);
-          setLoading(false);
-        }, 700);
-      } catch (error) {
-        setError(error);
-        setLoading(false);
-      }
-    }
-  }
-
   async function handleDeleteEvent() {
     setLoading(true);
     try {
@@ -273,7 +255,7 @@ export default function EventScreen({ navigation, location }: any) {
     return Object.keys(newErrors).find((error) => error !== undefined) === undefined;
   };
 
-  const handleSubmit = async () => {
+  const handleUpdateEvent = async () => {
     if (!validate() || !formState) {
       return;
     }
@@ -313,10 +295,7 @@ export default function EventScreen({ navigation, location }: any) {
   const renderEventItem = ({ item }: { item: IUserDetails }) => <UserTag user={item} />;
   const keyExtractor = (item: IUserDetails) => item.id;
 
-  if (loading)
-    return (
-      <LoadingBox success={success} />
-    );
+  if (loading) return <LoadingBox success={success} />;
   else
     return (
       <View style={styles.eventsBox}>
@@ -331,15 +310,15 @@ export default function EventScreen({ navigation, location }: any) {
               </View>
             )}
             <View style={[styles.fieldBox, shadowStyles.shadow]}>
+              <View style={edit && formState ? styles.titleBox : styles.eventTitleBox}>
+                {edit && formState ? <TextInput style={styles.input} value={formState.title} onChangeText={(value) => handleChange("title", value)} /> : <Text style={styles.eventTitleText}>{event.title}</Text>}
+              </View>
               <View style={styles.userBox}>
-                <View style={styles.userTagBox}>
+                <View style={[styles.userTagBox, shadowStyles.shadow]}>
                   <UserTag user={{ id: event.creator.id, fullName: event.creator.fullName, imageUrl: event.creator.imageUrl }} />
                 </View>
                 {sportTypeIconMap[event.sportType]}
                 <Text style={styles.titleText}>{event.sportType}</Text>
-              </View>
-              <View style={styles.titleBox}>
-                {edit && formState ? <TextInput style={styles.input} value={formState.title} onChangeText={(value) => handleChange("title", value)} /> : <Text style={styles.eventTitleText}>{event.title}</Text>}
               </View>
             </View>
             <View style={[styles.fieldBox, shadowStyles.shadow]}>
@@ -373,7 +352,7 @@ export default function EventScreen({ navigation, location }: any) {
 
             <View style={[styles.fieldBox, shadowStyles.shadow]}>
               <View style={styles.titleBox}>
-                <Ionicons name="calendar" style={styles.dateIcon} />
+                <Ionicons name="calendar-outline" style={styles.dateIcon} />
                 <Text style={styles.titleText}>Date & Time</Text>
               </View>
               <View style={styles.dateTimeBox}>
@@ -408,7 +387,7 @@ export default function EventScreen({ navigation, location }: any) {
                   <Ionicons name="people-sharp" style={styles.participantsIcon} />
                   <Text style={styles.titleText}>Participants</Text>
                 </View>
-                <View style={styles.dateTimeBox}>
+                <View style={styles.participantsBox}>
                   <View style={styles.participantsCountBox}>
                     <View style={styles.numOfParticipantsBox}>
                       <Text style={[styles.dateText, { fontSize: 38 }]}>{numOfParticipants > 0 ? numOfParticipants.toString() : "0"}</Text>
@@ -418,10 +397,13 @@ export default function EventScreen({ navigation, location }: any) {
                   </View>
                   <View style={styles.participantsListBox}>
                     {numOfParticipants > 0 ? (
-                      // <ScrollableList data={Object.values(event.participants).map((participant) => participant.user)} renderItem={renderEventItem} keyExtractor={keyExtractor} />
-                      <Text>List</Text>
+                      Object.values(event.participants).map((participant, index) => (
+                        <View style={[styles.participantTagBox, shadowStyles.shadow]} key={index}>
+                          <UserTag user={{ fullName: participant.user.fullName, id: participant.user.id, imageUrl: participant.user.imageUrl }} />
+                        </View>
+                      ))
                     ) : (
-                      <Text style={styles.smallTitleText}>Be the first to attend!</Text>
+                      <Text style={[styles.noParticipantsText, { textAlignVertical: "center" }]}>{isMyEvent ? "No one attended yet" : "Be the first to attend!"}</Text>
                     )}
                   </View>
                 </View>
@@ -445,8 +427,8 @@ export default function EventScreen({ navigation, location }: any) {
                 )}
                 {event.participantsLimit && edit && (
                   <View style={styles.infoBox}>
-                    <Text style={styles.smallTitleText}>Number of Participants</Text>
-                    <View style={{ width: 170, height: 40,margin:8 }}>
+                    <Text style={styles.smallTitleText}>Participants limit</Text>
+                    <View style={{ width: 170, height: 40, margin: 8 }}>
                       <NumberInput
                         min={2}
                         max={30}
@@ -458,8 +440,8 @@ export default function EventScreen({ navigation, location }: any) {
                     </View>
                   </View>
                 )}
-                {event.imageUrl && (
-                  <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker}>
+                {event.imageUrl && event.imageUrl !== "" && (
+                  <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker} disabled={!edit}>
                     <Image source={{ uri: imageUri ? imageUri : event.imageUrl }} style={styles.image} />
                     {edit && (
                       <View style={styles.imgBox}>
@@ -490,15 +472,15 @@ export default function EventScreen({ navigation, location }: any) {
             {isMyEvent && (
               <View style={styles.deleteButtonBox}>
                 {edit ? (
-                  <TouchableOpacity style={styles.saveButton} onPress={handleSubmit}>
+                  <TouchableOpacity style={styles.saveButton} onPress={handleUpdateEvent}>
                     <FontAwesome name="check" style={styles.attendButtonIcon} />
                     <Text style={styles.buttonText}>Save Changes</Text>
                   </TouchableOpacity>
                 ) : (
                   <>
                     <TouchableOpacity style={styles.editButton} onPress={handleEditButtonPress}>
-                      {!edit && <FontAwesome6 name="edit" style={styles.buttonIcon} />}
-                      <Text style={styles.buttonText}>{!edit ? "Edit Event" : "Cancel"}</Text>
+                      <FontAwesome6 name="edit" style={styles.buttonIcon} />
+                      <Text style={styles.buttonText}>Edit Event</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteEvent}>
                       <FontAwesome6 name="trash-can" style={styles.buttonIcon} />
