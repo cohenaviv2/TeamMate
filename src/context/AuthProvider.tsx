@@ -2,7 +2,6 @@ import React, { createContext, useState, useEffect, ReactNode } from "react";
 import { Firebase } from "../services/firebaseConfig";
 import { User } from "firebase/auth";
 import { IUser } from "../common/types";
-import { DataSnapshot, child, get, ref } from "firebase/database";
 import UserModel from "../models/UserModel";
 
 export interface AuthUser {
@@ -12,6 +11,7 @@ export interface AuthUser {
 
 interface AuthContextType {
   currentUser: AuthUser | null;
+  setCurrentUser: React.Dispatch<React.SetStateAction<AuthUser | null>>;
   loading: boolean;
   error: unknown;
 }
@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const unsubscribe = Firebase.auth.onAuthStateChanged(async (authUser) => {
       setLoading(true);
-      console.log(authUser?.email);
       if (authUser && !currentUser) {
         try {
           const dbUser = await UserModel.getUserById(authUser.uid);
@@ -45,5 +44,5 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  return <AuthContext.Provider value={{ currentUser, loading, error }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ currentUser, setCurrentUser, loading, error }}>{children}</AuthContext.Provider>;
 };

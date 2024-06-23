@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Text, TextInput, Image, TouchableOpacity, View, Alert, StyleSheet, ScrollView } from "react-native";
+import { Text, TextInput, Image, TouchableOpacity, View, StyleSheet, ScrollView } from "react-native";
 import styles from "./Register.scss";
-import Spinner from "../../components/Spinner/Spinner";
 import SportSelect from "../../components/SportSelect/SportSelect";
 import { IUser, SportType, sportTypeList } from "../../common/types";
 import Octicons from "@expo/vector-icons/Octicons";
@@ -23,14 +22,13 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
     city: "",
     favoriteSport: sportTypeList[0],
   });
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const [alertVisible, setAlertVisible] = useState(false);
 
   async function handleRegister() {
     if (user.email == "" || user.password == "" || user.fullName == "" || !imageUri) {
-      setAlertVisible(true);
+      setError("Please fill out all the fields");
       return;
     }
     setLoading(true);
@@ -58,7 +56,6 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
   }
 
   const handleCloseAlert = () => {
-    setAlertVisible(false);
     setError(null);
   };
 
@@ -67,13 +64,13 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
     return (
       <ScrollView style={styles.scrollBox}>
         <CustomAlert
-          visible={alertVisible}
-          title={error ? "Error" : "Incomplete Information"}
-          content={error ? error : "Please make sure to fill out all the fields"}
+          visible={!!error}
+          title="Error"
+          content={error!}
           onClose={handleCloseAlert}
           buttons={[
             {
-              text: "OK",
+              text: "Close",
               onPress: handleCloseAlert,
             },
           ]}
@@ -97,7 +94,7 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
             <Text style={[styles.favText, { textAlignVertical: "center" }]}>Your Favorite Sport</Text>
             <SportSelect theme="secondary" onChange={handleSportTypeChange} vibrate />
             <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-              <Text style={styles.buttonText}>Register</Text>
+              <Text style={styles.buttonText}>Sign up</Text>
             </TouchableOpacity>
           </View>
         </View>

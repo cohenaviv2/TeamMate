@@ -19,6 +19,7 @@ import moment from "moment";
 import Spinner from "../../components/Spinner/Spinner";
 import WeatherService from "../../services/WeatherService";
 import LoadingBox from "../../components/LoadingBox/LoadingBox";
+import CustomAlert from "../../components/CustomAlert/CustomAlert";
 
 const NewEventScreen = ({ navigation, location }: any) => {
   const authContext = useContext(AuthContext);
@@ -49,7 +50,7 @@ const NewEventScreen = ({ navigation, location }: any) => {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [marker, setMarker] = useState<LatLng | null>(null);
   const [errors, setErrors] = useState<any>({});
-  const [error, setError] = useState<any>();
+  const [error, setError] = useState<string|null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [weather, setWeather] = useState<any>(null);
@@ -185,21 +186,37 @@ const NewEventScreen = ({ navigation, location }: any) => {
         setLoading(false);
         navigation.goBack();
       }, 700);
-    } catch (error) {
-      setError(error);
+    } catch (error:any) {
+      setError(error.message || "An error occurred");
       setLoading(false);
       console.error("Error creating event:", error);
     }
   };
 
+    const handleCloseAlert = () => {
+      setError(null);
+    };
+
   if (loading) return <LoadingBox success={success} />;
   else
     return (
       <ScrollView style={styles.newEventBox} contentContainerStyle={{ justifyContent: "center", alignItems: "center", gap: 16 }}>
+        <CustomAlert
+          visible={!!error}
+          title="Error"
+          content={error!}
+          onClose={handleCloseAlert}
+          buttons={[
+            {
+              text: "Close",
+              onPress: handleCloseAlert,
+            },
+          ]}
+        />
         <View style={[styles.fieldBox, shadowStyles.shadow]}>
           <View style={styles.sportTypeBox}>
             <Text style={styles.titleText}>New Event</Text>
-            <SportSelect excludeAllOption theme="secondary" onChange={(value) => handleChange("sportType", value)} vibrate />
+            <SportSelect excludeAllOption theme="primary" onChange={(value) => handleChange("sportType", value)} vibrate />
           </View>
           <TextInput placeholder="Event Title..." style={errors.title !== undefined ? styles.errorInput : styles.input} value={formState.title} onChangeText={(value) => handleChange("title", value)} />
           {/* {errors.title !== undefined && <Text style={styles.error}>{errors.title}</Text>} */}

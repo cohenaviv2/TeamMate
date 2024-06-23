@@ -13,6 +13,7 @@ import ScrollableList from "../../components/List/List";
 import EventListItem from "../../components/List/EventListItem/EventListItem";
 import { useFocusEffect } from "@react-navigation/native";
 import MapTooltip from "../../components/MapTooltip/MapTooltip";
+import CustomAlert from "../../components/CustomAlert/CustomAlert";
 
 export default function HomeScreen({ navigation, location }: any) {
   const authContext = useContext(AuthContext);
@@ -22,26 +23,24 @@ export default function HomeScreen({ navigation, location }: any) {
   const [dateFilter, setDateFilter] = useState<"Month" | "Week" | "Today">("Month");
   const [showList, setShowList] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>();
+  const [error, setError] = useState<string | null>(null);
 
   const handleFetchEvents = useCallback(async (sportTypeFilter: SportType, dateFilter: "Month" | "Week" | "Today") => {
     setLoading(true);
-    setError(null);
-
     try {
       const fetchedEvents = await EventModel.getFilteredEvents(sportTypeFilter, dateFilter);
       setEvents(fetchedEvents);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching events:", error);
-      setError(error);
+      setError(error.message || "An error occurred");
     } finally {
       setLoading(false);
     }
   }, []);
 
-    const handleMarkerPress = (event:IEvent) => {
-      navigation.navigate("Event", { event });
-    };
+  const handleMarkerPress = (event: IEvent) => {
+    navigation.navigate("Event", { event });
+  };
 
   useEffect(() => {
     handleFetchEvents(sportTypeFilter, dateFilter);
@@ -53,11 +52,27 @@ export default function HomeScreen({ navigation, location }: any) {
     }, [sportTypeFilter, dateFilter, handleFetchEvents])
   );
 
+  const handleCloseAlert = () => {
+    setError(null);
+  };
+
   const renderEventItem = ({ item }: { item: IEvent }) => <EventListItem event={item} onEventPress={(event) => navigation.navigate("Event", { event: item })} />;
   const keyExtractor = (item: IEvent) => item.id;
 
   return (
     <Layout navigation={navigation} loading={loading}>
+      <CustomAlert
+        visible={!!error}
+        title="Error"
+        content={error!}
+        onClose={handleCloseAlert}
+        buttons={[
+          {
+            text: "Close",
+            onPress: handleCloseAlert,
+          },
+        ]}
+      />
       <View style={styles.homeBox}>
         <View style={styles.menuBox}>
           <View style={styles.listSwitchBox}>
@@ -101,7 +116,7 @@ export default function HomeScreen({ navigation, location }: any) {
           <TouchableOpacity
             style={styles.newEventButton}
             onPress={() => {
-              // Vibration.vibrate(10);
+              Vibration.vibrate(5);
               navigation.navigate("NewEvent");
             }}
           >

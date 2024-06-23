@@ -1,7 +1,6 @@
-import { View, TouchableOpacity, Text, TextInput, Image } from "react-native";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { View, TouchableOpacity, Text, TextInput, Image, Keyboard } from "react-native";
 import styles from "./Login.scss";
-import Spinner from "../../components/Spinner/Spinner";
 import Loading from "../Loading/Loading";
 import AuthService from "../../services/AuthService";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
@@ -11,11 +10,25 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [alertVisible, setAlertVisible] = useState(false);
+  const [isInputPressed, setIsInputPressed] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () => {
+      setIsInputPressed(true);
+    });
+    const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
+      setIsInputPressed(false);
+    });
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      setAlertVisible(true);
+      setError("Please fill out all the fields");
       return;
     }
     setLoading(true);
@@ -30,7 +43,6 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
   };
 
   const handleCloseAlert = () => {
-    setAlertVisible(false);
     setError(null);
   };
 
@@ -41,30 +53,32 @@ export default function LoginScreen({ navigation }: { navigation: any }) {
       ) : (
         <View style={styles.loginLayout}>
           <CustomAlert
-            visible={alertVisible || !!error}
-            title={error ? "Error" : "Incomplete Information"}
-            content={error ? error : "Please fill out all the fields"}
+            visible={!!error}
+            title="Error"
+            content={error!}
             onClose={handleCloseAlert}
             buttons={[
               {
-                text: "OK",
+                text: "Close",
                 onPress: handleCloseAlert,
               },
             ]}
           />
-          <View style={styles.logoBox}>
+          <View style={[styles.logoBox,{marginBottom: isInputPressed ? 32 : 0,marginTop:isInputPressed?64:0}]}>
             <Text style={styles.welcomeText}>Welcome To</Text>
             <Image source={require("../../assets/images/logo2.png")} style={styles.logo} />
           </View>
-          <View style={styles.registerBox}>
-            <Text style={styles.registerText}>Don't have an account yet?</Text>
-            <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate("Register")}>
-              <Text style={styles.buttonText}>Register</Text>
-            </TouchableOpacity>
-          </View>
+          {!isInputPressed && (
+            <View style={styles.registerBox}>
+              <Text style={styles.registerText}>Don't have an account yet?</Text>
+              <TouchableOpacity style={styles.registerButton} onPress={() => navigation.navigate("Register")}>
+                <Text style={styles.buttonText}>Sign up</Text>
+              </TouchableOpacity>
+            </View>
+          )}
           <View style={styles.loginBox}>
-            <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
-            <TextInput style={styles.input} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry />
+            <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" onFocus={() => setIsInputPressed(true)} onBlur={() => setIsInputPressed(false)} />
+            <TextInput style={styles.input} placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry onFocus={() => setIsInputPressed(true)} onBlur={() => setIsInputPressed(false)} />
             <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
               <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>

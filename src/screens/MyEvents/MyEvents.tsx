@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Vibration } from "react-native";
 import Layout from "../../components/Layout/Layout";
 import styles from "./MyEvents.scss";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -11,28 +11,26 @@ import MapView, { Callout, Marker } from "react-native-maps";
 import { FontAwesome5 } from "@expo/vector-icons";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import { useFocusEffect } from "@react-navigation/native";
-import { sportTypeIconMap } from "../../components/SportSelect/data";
 import MapTooltip from "../../components/MapTooltip/MapTooltip";
+import CustomAlert from "../../components/CustomAlert/CustomAlert";
 
 export default function MyEventsScreen({ navigation, location }: any) {
   const authContext = useContext(AuthContext);
   const [events, setEvents] = useState<IEvent[] | null>(null);
   const [showList, setShowList] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>();
+  const [error, setError] = useState<string | null>(null);
 
   async function handleFetchMyEvents() {
     if (!authContext || !authContext.currentUser) return;
     setLoading(true);
-    setError(null);
-
     try {
       const userId = authContext.currentUser.dbUser.id;
       const fetchedEvents = await EventModel.getEventsByCreatorId(userId);
       setEvents(fetchedEvents);
-    } catch (error) {
+    } catch (error:any) {
       console.error("Error fetching events:", error);
-      setError(error);
+      setError(error.message || "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -55,8 +53,24 @@ export default function MyEventsScreen({ navigation, location }: any) {
   const renderEventItem = ({ item }: { item: IEvent }) => <EventListItem event={item} onEventPress={(item) => navigation.navigate("MyEvent", { event: item })} />;
   const keyExtractor = (item: IEvent) => item.id || "";
 
+    const handleCloseAlert = () => {
+      setError(null);
+    };
+
   return (
     <Layout navigation={navigation} loading={loading}>
+      <CustomAlert
+        visible={!!error}
+        title="Error"
+        content={error!}
+        onClose={handleCloseAlert}
+        buttons={[
+          {
+            text: "Close",
+            onPress: handleCloseAlert,
+          },
+        ]}
+      />
       <View style={styles.eventsBox}>
         <View style={styles.titleBox}>
           <Text style={styles.titleText}>My Events</Text>
@@ -97,7 +111,7 @@ export default function MyEventsScreen({ navigation, location }: any) {
           <TouchableOpacity
             style={styles.newEventButton}
             onPress={() => {
-              // Vibration.vibrate(10);
+              Vibration.vibrate(5);
               navigation.navigate("NewEvent");
             }}
           >

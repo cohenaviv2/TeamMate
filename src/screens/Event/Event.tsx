@@ -24,6 +24,7 @@ import { launchImagePicker } from "../../utils/initialize";
 import CloudinaryService from "../../services/CloudinaryService";
 import NumberInput from "../../components/NumberInput/NumberInput";
 import LoadingBox from "../../components/LoadingBox/LoadingBox";
+import CustomAlert from "../../components/CustomAlert/CustomAlert";
 
 type RouteParams = {
   params: {
@@ -43,7 +44,7 @@ export default function EventScreen({ navigation, location }: any) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [edit, setEdit] = useState(false);
-  const [error, setError] = useState<any>();
+  const [error, setError] = useState<string | null>(null);
   const [marker, setMarker] = useState<LatLng | null>(null);
   const [formState, setFormState] = useState<IEvent | null>(null);
   const [errors, setErrors] = useState<any>({});
@@ -72,8 +73,8 @@ export default function EventScreen({ navigation, location }: any) {
         setIsMyEvent(userDetails.id === eventDetails.creator.id);
         setIsAttending(eventDetails.participants && !!eventDetails.participants[userDetails.id]);
       }
-    } catch (error) {
-      setError(error);
+    } catch (error:any) {
+      setError(error.message || "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -93,8 +94,8 @@ export default function EventScreen({ navigation, location }: any) {
         setLoading(false);
         navigation.navigate("Home");
       }, 700);
-    } catch (error) {
-      setError(error);
+    } catch (error:any) {
+      setError(error.message || "An error occurred");
       setLoading(false);
     }
   }
@@ -112,8 +113,8 @@ export default function EventScreen({ navigation, location }: any) {
         setIsMyEvent(userDetails.id === eventDetails.creator.id);
         setIsAttending(eventDetails.participants && !!eventDetails.participants[userDetails.id]);
       }
-    } catch (error) {
-      setError(error);
+    } catch (error:any) {
+      setError(error.message || "An error occurred");
     }
   }
 
@@ -127,8 +128,8 @@ export default function EventScreen({ navigation, location }: any) {
         setSuccess(false);
         setLoading(false);
       }, 700);
-    } catch (error) {
-      setError(error);
+    } catch (error:any) {
+      setError(error.message || "An error occurred");
       setLoading(false);
     }
   }
@@ -143,8 +144,8 @@ export default function EventScreen({ navigation, location }: any) {
         setSuccess(false);
         setLoading(false);
       }, 700);
-    } catch (error) {
-      setError(error);
+    } catch (error:any) {
+      setError(error.message || "An error occurred");
       setLoading(false);
     }
   }
@@ -279,8 +280,8 @@ export default function EventScreen({ navigation, location }: any) {
         setSuccess(false);
         setLoading(false);
       }, 700);
-    } catch (error) {
-      setError(error);
+    } catch (error:any) {
+      setError(error.message || "An error occurred");
       setLoading(false);
       console.error("Error creating event:", error);
     }
@@ -292,13 +293,26 @@ export default function EventScreen({ navigation, location }: any) {
     }
   };
 
-  const renderEventItem = ({ item }: { item: IUserDetails }) => <UserTag user={item} />;
-  const keyExtractor = (item: IUserDetails) => item.id;
+  const handleCloseAlert = () => {
+    setError(null);
+  };
 
   if (loading) return <LoadingBox success={success} />;
   else
     return (
       <View style={styles.eventsBox}>
+        <CustomAlert
+          visible={!!error}
+          title="Error"
+          content={error!}
+          onClose={handleCloseAlert}
+          buttons={[
+            {
+              text: "Close",
+              onPress: handleCloseAlert,
+            },
+          ]}
+        />
         {event && (
           <ScrollView style={styles.newEventBox} contentContainerStyle={styles.scrollBox} ref={scrollViewRef}>
             {isMyEvent && edit && (

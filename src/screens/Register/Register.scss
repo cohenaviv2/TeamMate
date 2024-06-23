@@ -39,11 +39,6 @@
   font-size: 26px;
 }
 
-.imgBtnText {
-  @extend .buttonText;
-  font-size: 14px;
-}
-
 .ageBox {
   @extend .hbox;
   justify-content: center;

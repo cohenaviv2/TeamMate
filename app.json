@@ -4,7 +4,7 @@
     "slug": "TeamMate",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/assets/icon.png",
+    "icon": "./src/assets/icon2.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./src/assets/splash2.png",
@@ -48,6 +48,11 @@
     },
     "plugins": [
       "expo-font"
-    ]
+    ],
+    "extra":{
+      "eas": {
+        "projectId": "1934f38c-2eea-4cf6-b84b-3b50ca42c673"
+      }
+    }
   }
 }

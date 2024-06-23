@@ -25,8 +25,8 @@
 }
 
 .logo {
-  width: 350px;
-  height: 70px;
+  width: 300px;
+  height: 60px;
 }
 
 .loginTitle {
@@ -52,7 +52,7 @@
   @extend .button;
   margin-top: 1rem;
   background-color: $secondary;
-  min-width: 90%;
+  min-width: 60%;
   height: 3.5rem;
   padding: 0px 0px;
   color: $text;
@@ -75,6 +75,6 @@
 .registerButton {
   @extend.loginButton;
   background-color: $primary;
-  min-width: 90%;
+  min-width: 80%;
   border: 2px solid $background;
 }

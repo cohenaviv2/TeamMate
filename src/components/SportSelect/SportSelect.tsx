@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { View, Text, TouchableOpacity, PanResponder, Animated, Vibration } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { SportType, sportTypeList } from "../../common/types";
@@ -21,10 +21,16 @@ const SportSelect: React.FC<SportSelectProps> = ({ onChange, theme, initialVal, 
   const [sportType, setSportType] = useState<SportType>(filteredSportTypeList[currentIndex]);
   const translateX = useState(new Animated.Value(0))[0];
 
+  const hasMounted = useRef(false); // Use this ref to track the mount status
+
   useEffect(() => {
-    setSportType(filteredSportTypeList[currentIndex]);
-    onChange(filteredSportTypeList[currentIndex]);
-    if (vibrate) Vibration.vibrate(10);
+    if (hasMounted.current) {
+      setSportType(filteredSportTypeList[currentIndex]);
+      onChange(filteredSportTypeList[currentIndex]);
+      if (vibrate) Vibration.vibrate(10);
+    } else {
+      hasMounted.current = true;
+    }
   }, [currentIndex]);
 
   const panResponder = useState(

@@ -12,26 +12,25 @@ import EventModel from "../../models/EventModel";
 import { useFocusEffect } from "@react-navigation/native";
 import EventListItem from "../../components/List/EventListItem/EventListItem";
 import CustomCalendar from "../../components/CustomCalendar/CustomCalendar";
+import CustomAlert from "../../components/CustomAlert/CustomAlert";
 
 export default function UpcomingScreen({ navigation }: { navigation: any }) {
   const authContext = useContext(AuthContext);
   const [events, setEvents] = useState<IEvent[]>([]);
   const [showList, setShowList] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<any>();
+  const [error, setError] = useState<string | null>(null);
 
   async function handleFetchUpcomingEvents() {
     if (!authContext || !authContext.currentUser) return;
     setLoading(true);
-    setError(null);
-
     try {
       const userId = authContext.currentUser.dbUser.id;
       const fetchedEvents = await EventModel.getEventsByParticipantId(userId);
       setEvents(fetchedEvents);
-    } catch (error) {
+    } catch (error: any) {
+      setError(error.message || "An error occurred");
       console.error("Error fetching events:", error);
-      setError(error);
     } finally {
       setLoading(false);
     }
@@ -50,8 +49,24 @@ export default function UpcomingScreen({ navigation }: { navigation: any }) {
   const renderEventItem = ({ item }: { item: IEvent }) => <EventListItem event={item} onEventPress={(item) => navigation.navigate("UpcomingEvent", { event: item })} />;
   const keyExtractor = (item: IEvent) => item.id || "";
 
+  const handleCloseAlert = () => {
+    setError(null);
+  };
+
   return (
     <Layout navigation={navigation} loading={loading}>
+      <CustomAlert
+        visible={!!error}
+        title="Error"
+        content={error!}
+        onClose={handleCloseAlert}
+        buttons={[
+          {
+            text: "Close",
+            onPress: handleCloseAlert,
+          },
+        ]}
+      />
       <View style={styles.upcomingBox}>
         <View style={styles.titleBox}>
           <Text style={styles.titleText}>Upcoming</Text>

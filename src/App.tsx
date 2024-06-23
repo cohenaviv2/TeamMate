@@ -2,15 +2,14 @@ import { useContext, useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { AuthContext, AuthProvider } from "./context/AuthProvider";
-import UpcomingScreen from "./screens/Upcoming/Upcoming";
-import ProfileScreen from "./screens/Profile/Profle";
 import styles from "./App.scss";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { AuthStack } from "./stacks/AuthStack";
-import { HomeStack } from "./stacks/HomeStack";
 import { getImagePickerPermission, getLocationPermission, loadFonts } from "./utils/initialize";
 import { LocationObject } from "expo-location";
-import Loading from "./screens/Loading/Loading";
+import ProfileScreen from "./screens/Profile/Profle";
+import LoadingScreen from "./screens/Loading/Loading";
+import { AuthStack } from "./stacks/AuthStack";
+import { HomeStack } from "./stacks/HomeStack";
 import { MyEventsStack } from "./stacks/MyEventsStack";
 import { UpcomingStack } from "./stacks/UpcomingStack";
 
@@ -29,7 +28,7 @@ const MainTabNavigator = ({ location }: any) => (
             iconName = focused ? "calendar" : "calendar-outline";
             break;
           case "MyEventsStack":
-            iconName = focused ? "body" : "body-outline";
+            iconName = focused ? "accessibility" : "accessibility-outline";
             break;
           case "Profile":
             iconName = focused ? "person" : "person-outline";
@@ -82,7 +81,7 @@ const App = () => {
   }, []);
 
   if (!authContext) {
-    return <Loading spinnerSize="l" />;
+    return <LoadingScreen spinnerSize="l" />;
   }
 
   const { currentUser, loading, error } = authContext;
@@ -92,14 +91,10 @@ const App = () => {
   }, [currentUser]);
 
   if (!fontsLoaded || !locationPermissionGranted || !imagePermissionGranted || loading) {
-    return <Loading spinnerSize="l" />;
+    return <LoadingScreen spinnerSize="l" />;
   }
 
-  return (
-    <NavigationContainer>
-      <AuthContext.Provider value={{ currentUser, loading, error }}>{currentUser ? <MainTabNavigator location={location} /> : <AuthStack />}</AuthContext.Provider>
-    </NavigationContainer>
-  );
+  return <NavigationContainer>{currentUser ? <MainTabNavigator location={location} /> : <AuthStack />}</NavigationContainer>;
 };
 
 export default () => (
