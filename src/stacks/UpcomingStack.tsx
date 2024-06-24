@@ -9,14 +9,14 @@ const Stack = createNativeStackNavigator();
 
 export const UpcomingStack = ({ location }: any) => {
   const navigation = useNavigation();
-  const screenOptions = createScreenOptions(navigation);
+  const screenOptions = createScreenOptions(navigation,"Upcoming");
 
   return (
     <Stack.Navigator>
       <Stack.Screen name="Upcoming" options={{ headerShown: false }}>
         {(props) => <UpcomingScreen {...props} />}
       </Stack.Screen>
-      <Stack.Screen name="UpcomingEvent" options={screenOptions}>
+      <Stack.Screen name="Upcoming Event" options={screenOptions}>
         {(props) => <EventScreen {...props} location={location} />}
       </Stack.Screen>
     </Stack.Navigator>

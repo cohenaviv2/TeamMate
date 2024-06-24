@@ -1,17 +1,19 @@
 import { useContext, useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { AuthContext, AuthProvider } from "./context/AuthProvider";
-import styles from "./App.scss";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { getImagePickerPermission, getLocationPermission, loadFonts } from "./utils/initialize";
+import { AuthContext, AuthProvider } from "./context/AuthProvider";
 import { LocationObject } from "expo-location";
-import ProfileScreen from "./screens/Profile/Profle";
-import LoadingScreen from "./screens/Loading/Loading";
 import { AuthStack } from "./stacks/AuthStack";
 import { HomeStack } from "./stacks/HomeStack";
 import { MyEventsStack } from "./stacks/MyEventsStack";
 import { UpcomingStack } from "./stacks/UpcomingStack";
+import ProfileScreen from "./screens/Profile/Profle";
+import LoadingScreen from "./screens/Loading/Loading";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import styles from "./App.scss";
+import "../globals.js";
+import CustomAlert from "./components/CustomAlert/CustomAlert";
 
 const Tab = createBottomTabNavigator();
 
@@ -52,10 +54,8 @@ const MainTabNavigator = ({ location }: any) => (
 );
 
 const App = () => {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
-  const [locationPermissionGranted, setLocationPermissionGranted] = useState(false);
   const [location, setLocation] = useState<LocationObject | null>(null);
-  const [imagePermissionGranted, setImagePermissionGranted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const authContext = useContext(AuthContext);
 
   useEffect(() => {
@@ -63,35 +63,49 @@ const App = () => {
       try {
         // Load fonts
         await loadFonts();
-        setFontsLoaded(true);
         // Get location permission
         const locationData = await getLocationPermission();
-        setLocation(locationData);
-        setLocationPermissionGranted(true);
         // Get image picker permission
         const imagePermission = await getImagePickerPermission();
-        setImagePermissionGranted(imagePermission);
-      } catch (error) {
-        console.error("Error loading app resources:", error);
-        setLocationPermissionGranted(false);
-        setFontsLoaded(true);
+        if (!locationData || !imagePermission) {
+          setError("Permissions required");
+          return;
+        }
+        setLocation(locationData);
+      } catch (error: any) {
+        setError(error.message || "Error loading app resources:");
+        console.log("Error loading app resources:", error);
       }
     };
     loadAppResources();
   }, []);
 
-  if (!authContext) {
+  if (!authContext || authContext.loading) {
     return <LoadingScreen spinnerSize="l" />;
   }
 
-  const { currentUser, loading, error } = authContext;
+  const { currentUser, loading, error: authError } = authContext;
 
-  useEffect(() => {
-    console.log("Current user: ", currentUser?.dbUser.fullName);
-  }, [currentUser]);
+  if (authError) setError(authError.message || "Auth Error");
 
-  if (!fontsLoaded || !locationPermissionGranted || !imagePermissionGranted || loading) {
-    return <LoadingScreen spinnerSize="l" />;
+  if (error) {
+    return (
+      <NavigationContainer>
+        <CustomAlert
+          visible={!!error}
+          title="Error"
+          content={error!}
+          onClose={() => setError(null)}
+          buttons={[
+            {
+              text: "Close",
+              onPress: () => setError(null),
+            },
+          ]}
+        />
+        <LoadingScreen spinnerSize="l" />
+      </NavigationContainer>
+    );
   }
 
   return <NavigationContainer>{currentUser ? <MainTabNavigator location={location} /> : <AuthStack />}</NavigationContainer>;

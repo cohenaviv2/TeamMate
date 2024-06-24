@@ -117,7 +117,7 @@ export default function HomeScreen({ navigation, location }: any) {
             style={styles.newEventButton}
             onPress={() => {
               Vibration.vibrate(5);
-              navigation.navigate("NewEvent");
+              navigation.navigate("New Event");
             }}
           >
             <FontAwesome5 name="plus" size={20} style={styles.buttonText} />

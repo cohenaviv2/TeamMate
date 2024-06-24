@@ -25,6 +25,7 @@ import CloudinaryService from "../../services/CloudinaryService";
 import NumberInput from "../../components/NumberInput/NumberInput";
 import LoadingBox from "../../components/LoadingBox/LoadingBox";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
+import WeatherService, { TempForcast } from "../../services/WeatherService";
 
 type RouteParams = {
   params: {
@@ -51,13 +52,32 @@ export default function EventScreen({ navigation, location }: any) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
-  const [weather, setWeather] = useState<any>(null);
+  const [weather, setWeather] = useState<TempForcast | null>(null);
+  const [weatherError, setWeatherError] = useState<string | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const userDetails: IUserDetails = {
     fullName: authContext!.currentUser!.dbUser.fullName,
     imageUrl: authContext!.currentUser!.dbUser.imageUrl,
     id: authContext!.currentUser!.dbUser.id,
   };
+
+  useEffect(() => {
+    async function fetchWeather() {
+      if (event) {
+        setWeatherLoading(true);
+        try {
+          const weatherData = await WeatherService.getTempForcast(event.location.latitude, event.location.longitude);
+          setWeather(weatherData);
+        } catch (error: any) {
+          setWeatherError(error.message || "An error occurred");
+        } finally {
+          setWeatherLoading(false);
+        }
+      }
+    }
+    fetchWeather();
+  }, [event]);
 
   async function handleFetchEvent() {
     setLoading(true);
@@ -73,7 +93,7 @@ export default function EventScreen({ navigation, location }: any) {
         setIsMyEvent(userDetails.id === eventDetails.creator.id);
         setIsAttending(eventDetails.participants && !!eventDetails.participants[userDetails.id]);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       setError(error.message || "An error occurred");
     } finally {
       setLoading(false);
@@ -94,7 +114,7 @@ export default function EventScreen({ navigation, location }: any) {
         setLoading(false);
         navigation.navigate("Home");
       }, 700);
-    } catch (error:any) {
+    } catch (error: any) {
       setError(error.message || "An error occurred");
       setLoading(false);
     }
@@ -113,7 +133,7 @@ export default function EventScreen({ navigation, location }: any) {
         setIsMyEvent(userDetails.id === eventDetails.creator.id);
         setIsAttending(eventDetails.participants && !!eventDetails.participants[userDetails.id]);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       setError(error.message || "An error occurred");
     }
   }
@@ -128,7 +148,7 @@ export default function EventScreen({ navigation, location }: any) {
         setSuccess(false);
         setLoading(false);
       }, 700);
-    } catch (error:any) {
+    } catch (error: any) {
       setError(error.message || "An error occurred");
       setLoading(false);
     }
@@ -144,7 +164,7 @@ export default function EventScreen({ navigation, location }: any) {
         setSuccess(false);
         setLoading(false);
       }, 700);
-    } catch (error:any) {
+    } catch (error: any) {
       setError(error.message || "An error occurred");
       setLoading(false);
     }
@@ -280,7 +300,7 @@ export default function EventScreen({ navigation, location }: any) {
         setSuccess(false);
         setLoading(false);
       }, 700);
-    } catch (error:any) {
+    } catch (error: any) {
       setError(error.message || "An error occurred");
       setLoading(false);
       console.error("Error creating event:", error);
@@ -292,6 +312,19 @@ export default function EventScreen({ navigation, location }: any) {
       scrollViewRef.current.scrollTo({ y: 0, animated: true });
     }
   };
+
+  function getWeatherIconPath(icon: string): any {
+    switch (icon) {
+      case "cold-icon":
+        return require("../../assets/icons/cold-icon.png");
+      case "moderate-icon":
+        return require("../../assets/icons/moderate-icon.png");
+      case "warm-icon":
+        return require("../../assets/icons/warm-icon.png");
+      default:
+        return null;
+    }
+  }
 
   const handleCloseAlert = () => {
     setError(null);
@@ -376,21 +409,32 @@ export default function EventScreen({ navigation, location }: any) {
                   <Text style={[styles.timeText, { fontSize: 14 }]}>{moment(edit && formState ? new Date(formState.dateTime) : new Date(event.dateTime)).format("YYYY")}</Text>
                 </TouchableOpacity>
                 {showDatePicker && <DateTimePicker value={edit && formState ? new Date(formState.dateTime) : new Date(event.dateTime)} mode="date" display="default" onChange={handleDateChange} />}
-
-                <View style={styles.timeBox}>
-                  <View style={styles.weatherBox}>
-                    {weather ? (
-                      <>
-                        <Text style={styles.timeText}>{weather.temp}°C</Text>
-                      </>
-                    ) : (
+                <TouchableOpacity style={styles.timeButton} onPress={() => setShowTimePicker(true)} disabled={!edit}>
+                  <Text style={[styles.dateText, { fontSize: 24 }]}>{edit && formState ? new Date(formState.dateTime).toTimeString().substring(0, 5) : new Date(event.dateTime).toTimeString().substring(0, 5)}</Text>
+                </TouchableOpacity>
+                {showTimePicker && <DateTimePicker value={edit && formState ? new Date(formState.dateTime) : new Date(event.dateTime)} mode="time" display="inline" onChange={handleTimeChange} />}
+                <View style={styles.weatherBox}>
+                  {weatherLoading ? (
+                    <View style={styles.weatherInfoBox}>
                       <Spinner size="m" />
-                    )}
-                  </View>
-                  <TouchableOpacity style={styles.timeButton} onPress={() => setShowTimePicker(true)} disabled={!edit}>
-                    <Text style={styles.timeText}>{edit && formState ? new Date(formState.dateTime).toTimeString().substring(0, 5) : new Date(event.dateTime).toTimeString().substring(0, 5)}</Text>
-                  </TouchableOpacity>
-                  {showTimePicker && <DateTimePicker value={edit && formState ? new Date(formState.dateTime) : new Date(event.dateTime)} mode="time" display="inline" onChange={handleTimeChange} />}
+                      <Text style={styles.weatherErrorText}>Loading Weather</Text>
+                    </View>
+                  ) : weatherError ? (
+                    <View style={styles.weatherInfoBox}>
+                      <Text style={styles.weatherErrorText}>{weatherError}</Text>
+                    </View>
+                  ) : (
+                    weather &&
+                    Object.keys(weather).map((date, index) => (
+                      <View style={styles.tempBox} key={index}>
+                        <View style={styles.weatherDateBox}>
+                          <Text style={[styles.dateText, { fontSize: 16 }]}>{moment(new Date(date)).format("D")}</Text>
+                        </View>
+                        <Image source={getWeatherIconPath(weather[date].icon)} style={styles.weatherImage} />
+                        <Text style={[styles.weatherText, { fontSize: 16 }]}>{weather[date].temperature.toString() + "°"}</Text>
+                      </View>
+                    ))
+                  )}
                 </View>
               </View>
             </View>

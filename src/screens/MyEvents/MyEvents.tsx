@@ -47,10 +47,10 @@ export default function MyEventsScreen({ navigation, location }: any) {
   );
 
   const handleMarkerPress = (event: IEvent) => {
-    navigation.navigate("MyEvent", { event });
+    navigation.navigate("My Event", { event });
   };
 
-  const renderEventItem = ({ item }: { item: IEvent }) => <EventListItem event={item} onEventPress={(item) => navigation.navigate("MyEvent", { event: item })} />;
+  const renderEventItem = ({ item }: { item: IEvent }) => <EventListItem event={item} onEventPress={(item) => navigation.navigate("My Event", { event: item })} />;
   const keyExtractor = (item: IEvent) => item.id || "";
 
     const handleCloseAlert = () => {
@@ -112,7 +112,7 @@ export default function MyEventsScreen({ navigation, location }: any) {
             style={styles.newEventButton}
             onPress={() => {
               Vibration.vibrate(5);
-              navigation.navigate("NewEvent");
+              navigation.navigate("My New Event");
             }}
           >
             <FontAwesome5 name="plus" size={20} style={styles.buttonText} />

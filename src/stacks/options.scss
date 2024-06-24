@@ -2,9 +2,9 @@
 
 .backIconBox {
     @extend .hbox;
+    justify-content: center;
     padding-top: 4px;
-    width: 35%;
-    margin-left: -15%;
+    min-width: 4rem;
 }
 
 .backIcon {

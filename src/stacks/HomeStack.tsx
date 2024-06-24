@@ -10,7 +10,7 @@ const Stack = createNativeStackNavigator();
 
 export const HomeStack = ({ location }: any) => {
   const navigation = useNavigation();
-  const screenOptions = createScreenOptions(navigation);
+  const screenOptions = createScreenOptions(navigation,"Home");
 
   return (
     <Stack.Navigator>
@@ -20,7 +20,7 @@ export const HomeStack = ({ location }: any) => {
       <Stack.Screen name="Event" options={screenOptions}>
         {(props) => <EventScreen {...props} location={location} />}
       </Stack.Screen>
-      <Stack.Screen name="NewEvent" options={screenOptions}>
+      <Stack.Screen name="New Event" options={screenOptions}>
         {(props) => <NewEventScreen {...props} location={location} />}
       </Stack.Screen>
     </Stack.Navigator>

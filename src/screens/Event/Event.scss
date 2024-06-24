@@ -121,7 +121,8 @@
 .timeButton {
   @extend .dateButton;
   background-color: $primary-dark;
-  padding: 10px 32px;
+  padding: 10px 24px;
+  border-radius: 10px;
 }
 
 .timeBox {
@@ -131,8 +132,72 @@
 }
 
 .dateTimeBox {
+  @extend .vbox;
+  width: 100%;
+  gap: 0.5rem;
+}
+
+.weatherBox {
+  width: 100%;
+  padding: 8px;
+  background-color: $background-light;
+  // gap: 1rem;
+  min-height: 7rem;
+  border-radius: 12px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.weatherErrorText {
+  text-align: center;
+  font-size: 16px;
+  font-family: "Lato";
+  color: grey;
+}
+
+.weatherInfoBox {
   @extend .hbox;
-  gap: 1rem;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  height: 100%;
+}
+
+.tempBox {
+  @extend .vbox;
+  justify-content: center;
+  height: 6rem;
+  padding: 6px;
+  gap: 2px;
+  border-radius: 8px;
+  background-color: $text;
+  border: 2px solid $background;
+  margin: 3px;
+}
+
+.weatherDateBox {
+  @extend .vbox;
+  justify-content: center;
+  background-color: $primary-light;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.weatherImage {
+  width: 26px;
+  height: 26px;
+}
+
+.weatherText {
+  @extend .timeText;
+  color: rgb(39, 39, 39);
+}
+
+.weatherTextBold {
+  @extend .dateText;
+  color: grey;
 }
 
 .participantsBox {

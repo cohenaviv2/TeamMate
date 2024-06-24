@@ -8,7 +8,7 @@ const Stack = createNativeStackNavigator();
 
 export const AuthStack = () => {
   const navigation = useNavigation();
-  const screenOptions = createScreenOptions(navigation);
+  const screenOptions = createScreenOptions(navigation,"Login");
 
   return (
     <Stack.Navigator>

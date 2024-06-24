@@ -46,7 +46,7 @@ export default function UpcomingScreen({ navigation }: { navigation: any }) {
     }, [])
   );
 
-  const renderEventItem = ({ item }: { item: IEvent }) => <EventListItem event={item} onEventPress={(item) => navigation.navigate("UpcomingEvent", { event: item })} />;
+  const renderEventItem = ({ item }: { item: IEvent }) => <EventListItem event={item} onEventPress={(item) => navigation.navigate("Upcoming Event", { event: item })} />;
   const keyExtractor = (item: IEvent) => item.id || "";
 
   const handleCloseAlert = () => {
@@ -83,7 +83,7 @@ export default function UpcomingScreen({ navigation }: { navigation: any }) {
             <ScrollableList data={events} renderItem={renderEventItem} keyExtractor={keyExtractor} />
           )
         ) : (
-          <CustomCalendar events={events} onCalendarItemPress={(event) => navigation.navigate("UpcomingEvent", { event })} />
+          <CustomCalendar events={events} onCalendarItemPress={(event) => navigation.navigate("Upcoming Event", { event })} />
         )}
       </View>
     </Layout>

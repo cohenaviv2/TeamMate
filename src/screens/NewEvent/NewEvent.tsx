@@ -17,7 +17,7 @@ import { launchImagePicker } from "../../utils/initialize";
 import CloudinaryService from "../../services/CloudinaryService";
 import moment from "moment";
 import Spinner from "../../components/Spinner/Spinner";
-import WeatherService from "../../services/WeatherService";
+import WeatherService, { TempForcast } from "../../services/WeatherService";
 import LoadingBox from "../../components/LoadingBox/LoadingBox";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
 
@@ -50,28 +50,31 @@ const NewEventScreen = ({ navigation, location }: any) => {
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [marker, setMarker] = useState<LatLng | null>(null);
   const [errors, setErrors] = useState<any>({});
-  const [error, setError] = useState<string|null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [weather, setWeather] = useState<any>(null);
+  const [weather, setWeather] = useState<TempForcast | null>(null);
+  const [weatherError, setWeatherError] = useState<string | null>(null);
+  const [weatherLoading,setWeatherLoading] = useState(false)
 
   // useEffect(()=>console.log(formState),[formState])
-  
 
-  // useEffect(() => {
-  //   async function fetchWeather() {
-  //     if (location.coords.longitude) {
-  //       try {
-  //         const weatherData = await WeatherService.getWeatherByDateAndLocation(formState.dateTime, formState.location.latitude, formState.location.longitude);
-  //         console.log(weatherData);
-  //         setWeather(weatherData);
-  //       } catch (error) {
-  //         setError(error);
-  //       }
-  //     }
-  //   }
-  //   fetchWeather();
-  // }, []);
+  useEffect(() => {
+    async function fetchWeather() {
+      if (location.coords.longitude) {
+        setWeatherLoading(true);
+        try {
+          const weatherData = await WeatherService.getTempForcast(formState.location.latitude, formState.location.longitude);
+          setWeather(weatherData);
+        } catch (error: any) {
+          setWeatherError(error.message || "An error occurred");
+        } finally {
+          setWeatherLoading(false);
+        }
+      }
+    }
+    fetchWeather();
+  }, [formState.location.latitude, formState.location.longitude]);
 
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
     setShowDatePicker(false);
@@ -186,16 +189,29 @@ const NewEventScreen = ({ navigation, location }: any) => {
         setLoading(false);
         navigation.goBack();
       }, 700);
-    } catch (error:any) {
+    } catch (error: any) {
       setError(error.message || "An error occurred");
       setLoading(false);
       console.error("Error creating event:", error);
     }
   };
 
-    const handleCloseAlert = () => {
-      setError(null);
-    };
+  function getWeatherIconPath(icon: string): any {
+    switch (icon) {
+      case "cold-icon":
+        return require("../../assets/icons/cold-icon.png");
+      case "moderate-icon":
+        return require("../../assets/icons/moderate-icon.png");
+      case "warm-icon":
+        return require("../../assets/icons/warm-icon.png");
+      default:
+        return null;
+    }
+  }
+
+  const handleCloseAlert = () => {
+    setError(null);
+  };
 
   if (loading) return <LoadingBox success={success} />;
   else
@@ -262,27 +278,38 @@ const NewEventScreen = ({ navigation, location }: any) => {
           </View>
           <View style={styles.dateTimeBox}>
             <TouchableOpacity style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
-              <Text style={[styles.dateText, { fontSize: 18 }]}>{moment(new Date()).format("MMM")}</Text>
-              <Text style={[styles.dateText, { fontSize: 38 }]}>{moment(new Date()).format("D")}</Text>
-              <Text style={[styles.timeText, { fontSize: 14 }]}>{moment(new Date()).format("YYYY")}</Text>
+              <Text style={[styles.dateText, { fontSize: 18 }]}>{moment(new Date(formState.dateTime)).format("MMM")}</Text>
+              <Text style={[styles.dateText, { fontSize: 38 }]}>{moment(new Date(formState.dateTime)).format("D")}</Text>
+              <Text style={[styles.timeText, { fontSize: 14 }]}>{moment(new Date(formState.dateTime)).format("YYYY")}</Text>
             </TouchableOpacity>
             {showDatePicker && <DateTimePicker value={new Date(formState.dateTime)} mode="date" display="default" onChange={handleDateChange} />}
-
-            <View style={styles.timeBox}>
-              <View style={styles.weatherBox}>
-                {weather ? (
-                  <>
-                    <Text style={styles.timeText}>{weather.temp}°C</Text>
-                  </>
-                ) : (
-                  <Spinner size="m" />
-                )}
+            <TouchableOpacity style={styles.timeButton} onPress={() => setShowTimePicker(true)}>
+              <Text style={[styles.dateText, { fontSize: 24 }]}>{new Date(formState.dateTime).toTimeString().substring(0, 5)}</Text>
+            </TouchableOpacity>
+            {showTimePicker && <DateTimePicker value={new Date(formState.dateTime)} mode="time" display="inline" onChange={handleTimeChange} />}
+          </View>
+          <View style={styles.weatherBox}>
+            {weatherLoading ? (
+              <View style={styles.weatherInfoBox}>
+                <Spinner size="m" />
+                <Text style={styles.weatherErrorText}>Loading Weather</Text>
               </View>
-              <TouchableOpacity style={styles.timeButton} onPress={() => setShowTimePicker(true)}>
-                <Text style={styles.timeText}>{new Date(formState.dateTime).toTimeString().substring(0, 5)}</Text>
-              </TouchableOpacity>
-              {showTimePicker && <DateTimePicker value={new Date(formState.dateTime)} mode="time" display="inline" onChange={handleTimeChange} />}
-            </View>
+            ) : weatherError ? (
+              <View style={styles.weatherInfoBox}>
+                <Text style={styles.weatherErrorText}>{weatherError}</Text>
+              </View>
+            ) : (
+              weather &&
+              Object.keys(weather).map((date, index) => (
+                <View style={styles.tempBox} key={index}>
+                  <View style={styles.weatherDateBox}>
+                    <Text style={[styles.dateText, { fontSize: 16 }]}>{moment(new Date(date)).format("D")}</Text>
+                  </View>
+                  <Image source={getWeatherIconPath(weather[date].icon)} style={styles.weatherImage} />
+                  <Text style={[styles.weatherText, { fontSize: 16 }]}>{weather[date].temperature.toString() + "°"}</Text>
+                </View>
+              ))
+            )}
           </View>
         </View>
 
