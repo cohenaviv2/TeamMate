@@ -305,6 +305,7 @@
   @extend .hbox;
   justify-content: center;
   gap: 0.2rem;
+  min-height: 4rem;
 }
 
 .unattendButton {

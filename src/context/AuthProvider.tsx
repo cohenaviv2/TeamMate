@@ -21,7 +21,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any|null>(null);
+  const [error, setError] = useState<any | null>(null);
 
   useEffect(() => {
     const unsubscribe = Firebase.auth.onAuthStateChanged(async (authUser) => {
@@ -30,9 +30,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setTimeout(() => {
           UserModel.getUserById(authUser.uid)
             .then((dbUser) => setCurrentUser({ authUser, dbUser }))
-            .catch((error) => setError(error))
+            .catch((error) => {
+              console.log(error);
+              setError(error);
+            })
             .finally(() => setLoading(false));
-        },2000);
+        }, 2000);
       } else {
         setCurrentUser(null);
         setLoading(false);

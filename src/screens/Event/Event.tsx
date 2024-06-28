@@ -12,10 +12,8 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import MapView, { LatLng, LongPressEvent, Marker } from "react-native-maps";
 import moment from "moment";
 import UserTag from "../../components/UserTag/UserTag";
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthProvider";
-import Loading from "../Loading/Loading";
-import ScrollableList from "../../components/List/List";
 import EventModel from "../../models/EventModel";
 import Spinner from "../../components/Spinner/Spinner";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
@@ -39,6 +37,7 @@ export default function EventScreen({ navigation, location }: any) {
   const { id: eventId } = route.params.event;
   const [event, setEvent] = useState<IEvent | null>(null);
   const [numOfParticipants, setNumOfParticipants] = useState<number>(0);
+  const [eventIsFull, setEventIsFull] = useState(false);
   const [isAdditionalInfo, setIsAdditionalInfo] = useState<boolean | null>(null);
   const [isMyEvent, setIsMyEvent] = useState<boolean | null>(null);
   const [isAttending, setIsAttending] = useState<boolean | null>(null);
@@ -57,9 +56,9 @@ export default function EventScreen({ navigation, location }: any) {
   const [weatherLoading, setWeatherLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const userDetails: IUserDetails = {
-    fullName: authContext!.currentUser!.dbUser.fullName,
-    imageUrl: authContext!.currentUser!.dbUser.imageUrl,
-    id: authContext!.currentUser!.dbUser.id,
+    fullName: authContext?.currentUser?.dbUser.fullName || "",
+    imageUrl: authContext?.currentUser?.dbUser.imageUrl || "",
+    id: authContext?.currentUser?.dbUser.id || "",
   };
 
   useEffect(() => {
@@ -79,30 +78,33 @@ export default function EventScreen({ navigation, location }: any) {
     fetchWeather();
   }, [event]);
 
-  async function handleFetchEvent() {
-    setLoading(true);
-    try {
-      const eventDetails = await EventModel.getEventById(eventId);
-      if (eventDetails) {
-        setEvent(eventDetails);
-        setFormState(eventDetails);
-        setMarker({ longitude: eventDetails.location.longitude, latitude: eventDetails.location.latitude });
-        setNumOfParticipants(eventDetails.participants ? Object.keys(eventDetails.participants).length : 0);
-        const hasAdditionalFields: boolean = Boolean(eventDetails.description !== undefined || eventDetails.locationType !== undefined || (eventDetails.imageUrl !== undefined && eventDetails.imageUrl !== ""));
-        setIsAdditionalInfo(hasAdditionalFields);
-        setIsMyEvent(userDetails.id === eventDetails.creator.id);
-        setIsAttending(eventDetails.participants && !!eventDetails.participants[userDetails.id]);
-      }
-    } catch (error: any) {
-      setError(error.message || "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
+    async function handleFetchEvent() {
+      setLoading(true);
+      try {
+        const eventDetails = await EventModel.getEventById(eventId);
+        if (eventDetails) updateEventDetails(eventDetails);
+      } catch (error: any) {
+        console.log(error);
+        setError(error.message || "An error occurred");
+      } finally {
+        setLoading(false);
+      }
+    }
     handleFetchEvent();
   }, []);
+
+  function updateEventDetails(eventDetails: IEvent) {
+    setEvent(eventDetails);
+    setFormState(eventDetails);
+    setMarker({ longitude: eventDetails.location.longitude, latitude: eventDetails.location.latitude });
+    setNumOfParticipants(eventDetails.participants ? Object.keys(eventDetails.participants).length : 0);
+    if (eventDetails.participantsLimit) setEventIsFull(Object.keys(eventDetails.participants).length === eventDetails.participantsLimit);
+    const hasAdditionalFields: boolean = Boolean(eventDetails.description !== undefined || eventDetails.locationType !== undefined || (eventDetails.imageUrl !== undefined && eventDetails.imageUrl !== ""));
+    setIsAdditionalInfo(hasAdditionalFields);
+    setIsMyEvent(userDetails.id === eventDetails.creator.id);
+    setIsAttending(eventDetails.participants && !!eventDetails.participants[userDetails.id]);
+  }
 
   async function handleDeleteEvent() {
     setLoading(true);
@@ -120,19 +122,10 @@ export default function EventScreen({ navigation, location }: any) {
     }
   }
 
-  async function updateEventDetails() {
+  async function handleUpdateEvent() {
     try {
       const eventDetails = await EventModel.getEventById(eventId);
-      if (eventDetails) {
-        setEvent(eventDetails);
-        setFormState(eventDetails);
-        setMarker({ longitude: eventDetails.location.longitude, latitude: eventDetails.location.latitude });
-        setNumOfParticipants(eventDetails.participants ? Object.keys(eventDetails.participants).length : 0);
-        const hasAdditionalFields: boolean = Boolean(eventDetails.description !== undefined || eventDetails.locationType !== undefined || (eventDetails.imageUrl !== undefined && eventDetails.imageUrl !== ""));
-        setIsAdditionalInfo(hasAdditionalFields);
-        setIsMyEvent(userDetails.id === eventDetails.creator.id);
-        setIsAttending(eventDetails.participants && !!eventDetails.participants[userDetails.id]);
-      }
+      if (eventDetails) updateEventDetails(eventDetails);
     } catch (error: any) {
       setError(error.message || "An error occurred");
     }
@@ -142,7 +135,7 @@ export default function EventScreen({ navigation, location }: any) {
     setLoading(true);
     try {
       await EventModel.attendEvent(eventId, userDetails);
-      await updateEventDetails();
+      await handleUpdateEvent();
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
@@ -158,7 +151,7 @@ export default function EventScreen({ navigation, location }: any) {
     setLoading(true);
     try {
       await EventModel.unAttendEvent(eventId, userDetails.id);
-      await updateEventDetails();
+      await handleUpdateEvent();
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
@@ -212,7 +205,10 @@ export default function EventScreen({ navigation, location }: any) {
 
   const handleImagePicker = async () => {
     const uri = await launchImagePicker([5, 4]);
-    setImageUri(uri);
+    if (uri) {
+      setImageUri(uri);
+      if (errors.imageUrl) errors.imageUrl = undefined;
+    }
   };
 
   const setNestedProperty = (obj: any, path: string, value: any) => {
@@ -222,8 +218,6 @@ export default function EventScreen({ navigation, location }: any) {
     if (lastKey) lastObj[lastKey] = value;
     return { ...obj };
   };
-
-  // useEffect(() => console.log(formState), [formState]);
 
   const handleChange = (field: string, value: any) => {
     // Omit locationType if value is "None"
@@ -276,7 +270,7 @@ export default function EventScreen({ navigation, location }: any) {
     return Object.keys(newErrors).find((error) => error !== undefined) === undefined;
   };
 
-  const handleUpdateEvent = async () => {
+  const handleSubmitUpdateEvent = async () => {
     if (!validate() || !formState) {
       return;
     }
@@ -294,7 +288,7 @@ export default function EventScreen({ navigation, location }: any) {
 
       await EventModel.updateEvent(eventId, updatedEvent);
       setEdit(false);
-      await updateEventDetails();
+      await handleUpdateEvent();
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
@@ -530,7 +524,7 @@ export default function EventScreen({ navigation, location }: any) {
             {isMyEvent && (
               <View style={styles.deleteButtonBox}>
                 {edit ? (
-                  <TouchableOpacity style={styles.saveButton} onPress={handleUpdateEvent}>
+                  <TouchableOpacity style={styles.saveButton} onPress={handleSubmitUpdateEvent}>
                     <FontAwesome name="check" style={styles.attendButtonIcon} />
                     <Text style={styles.buttonText}>Save Changes</Text>
                   </TouchableOpacity>
@@ -551,7 +545,7 @@ export default function EventScreen({ navigation, location }: any) {
           </ScrollView>
         )}
         {!isMyEvent &&
-          (!isAttending ? (
+          (!isAttending && !eventIsFull ? (
             <TouchableOpacity style={styles.attendButton} onPress={handleAttendEvent}>
               <FontAwesome name="check" style={styles.attendButtonIcon} />
               <Text style={styles.buttonText}>Attend Event</Text>
@@ -559,11 +553,12 @@ export default function EventScreen({ navigation, location }: any) {
           ) : (
             <View style={styles.unattendBox}>
               <Feather name="info" style={styles.unattendInfoIcon} />
-              <Text style={styles.smallTitleText}>You are attending to this event</Text>
-              <TouchableOpacity style={styles.unattendButton} onPress={handleUnattendEvent}>
-                {/* <FontAwesome name="close" style={styles.attendButtonIcon} /> */}
-                <Text style={styles.buttonText}>Unattend</Text>
-              </TouchableOpacity>
+              <Text style={styles.smallTitleText}>{eventIsFull ? "Event is full" : "You are attending to this event"}</Text>
+              {isAttending && (
+                <TouchableOpacity style={styles.unattendButton} onPress={handleUnattendEvent}>
+                  <Text style={styles.buttonText}>Unattend</Text>
+                </TouchableOpacity>
+              )}
             </View>
           ))}
       </View>

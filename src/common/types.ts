@@ -3,8 +3,8 @@ export interface IUser {
   email: string;
   password: string;
   imageUrl: string;
-  age:number;
-  city:string;
+  age: number;
+  city: string;
   favoriteSport: SportType;
   id: string;
 }
@@ -41,3 +41,6 @@ export interface IUserDetails {
   fullName: string;
   imageUrl: string;
 }
+
+export type DateFilter = "Month" | "Week" | "Today";
+export const dateFilters: DateFilter[] = ["Month", "Week", "Today"];

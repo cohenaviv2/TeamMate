@@ -25,23 +25,27 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
   const user = authContext!.currentUser!.dbUser;
   const [dbUser, setDbUser] = useState<IUser | null>(null);
   const [formState, setFormState] = useState<IUser | null>(user);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [edit, setEdit] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imageUri, setImageUri] = useState<string | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  async function handleFetchUser() {
-    setLoading(true);
-    try {
-      const dbUser = await UserModel.getUserById(user.id);
-      setDbUser(dbUser);
-      setFormState(dbUser);
-    } catch (error: any) {
-      setError(error.message || "An error occurred");
-    } finally {
-      setLoading(false);
+  function handleFetchUser() {
+    // setLoading(true);
+    // try {
+    //   const dbUser = await UserModel.getUserById(user.id);
+    //   setDbUser(dbUser);
+    //   setFormState(dbUser);
+    // } catch (error: any) {
+    //   setError(error.message || "An error occurred");
+    // } finally {
+    //   setLoading(false);
+    // }
+    if (user) {
+      setDbUser(user);
+      setFormState(user);
     }
   }
 

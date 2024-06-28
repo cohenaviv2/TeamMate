@@ -55,7 +55,7 @@ const NewEventScreen = ({ navigation, location }: any) => {
   const [loading, setLoading] = useState(false);
   const [weather, setWeather] = useState<TempForcast | null>(null);
   const [weatherError, setWeatherError] = useState<string | null>(null);
-  const [weatherLoading,setWeatherLoading] = useState(false)
+  const [weatherLoading, setWeatherLoading] = useState(false);
 
   // useEffect(()=>console.log(formState),[formState])
 
@@ -167,6 +167,7 @@ const NewEventScreen = ({ navigation, location }: any) => {
 
   const handleSubmit = async () => {
     if (!validate()) {
+      setError("Please fill out all the required fields");
       return;
     }
 
@@ -178,10 +179,14 @@ const NewEventScreen = ({ navigation, location }: any) => {
       }
       const newEvent: IEvent = {
         ...formState,
+        participants:{
+          [user.id]:{user},
+        },
         imageUrl: imageUri ? imageUri : "",
         createdAt: new Date().toISOString(),
       };
 
+      console.log(newEvent)
       await EventModel.createEvent(newEvent);
       setSuccess(true);
       setTimeout(() => {

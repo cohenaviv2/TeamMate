@@ -20,7 +20,7 @@ export async function getLocationPermission() {
       throw new Error("Location permission not granted");
     }
   } catch (error) {
-    console.error("Error requesting location permissions:", error);
+    console.log("Error requesting location permissions:", error);
     throw error;
   }
 }
@@ -33,7 +33,7 @@ export async function getImagePickerPermission() {
     }
     return true;
   } catch (error) {
-    console.error("Error requesting image picker permissions:", error);
+    console.log("Error requesting image picker permissions:", error);
     throw error;
   }
 }
@@ -49,7 +49,7 @@ export async function launchImagePicker(aspect:[number,number]) {
     const uri = pickerResult.assets[0].uri;
     return uri;
   } catch (error) {
-    console.error("Error launching image picker:", error);
+    console.log("Error launching image picker:", error);
     throw error;
   }
 }

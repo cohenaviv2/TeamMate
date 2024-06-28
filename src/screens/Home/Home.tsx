@@ -2,7 +2,7 @@ import { View, TouchableOpacity, Vibration, Text } from "react-native";
 import React, { useContext, useEffect, useState, useCallback } from "react";
 import Layout from "../../components/Layout/Layout";
 import MapView, { Callout, Marker } from "react-native-maps";
-import { IEvent, SportType } from "../../common/types";
+import { DateFilter, IEvent, SportType, dateFilters } from "../../common/types";
 import { FontAwesome5 } from "@expo/vector-icons";
 import SportSelect from "../../components/SportSelect/SportSelect";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
@@ -20,12 +20,12 @@ export default function HomeScreen({ navigation, location }: any) {
   const favoriteSportType = authContext!.currentUser!.dbUser.favoriteSport;
   const [events, setEvents] = useState<IEvent[]>([]);
   const [sportTypeFilter, setSportTypeFilter] = useState<SportType>(favoriteSportType);
-  const [dateFilter, setDateFilter] = useState<"Month" | "Week" | "Today">("Month");
+  const [dateFilter, setDateFilter] = useState<DateFilter>("Month");
   const [showList, setShowList] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFetchEvents = useCallback(async (sportTypeFilter: SportType, dateFilter: "Month" | "Week" | "Today") => {
+  const handleFetchEvents = useCallback(async (sportTypeFilter: SportType, dateFilter: DateFilter) => {
     setLoading(true);
     try {
       const fetchedEvents = await EventModel.getFilteredEvents(sportTypeFilter, dateFilter);
@@ -111,7 +111,7 @@ export default function HomeScreen({ navigation, location }: any) {
         </View>
         <View style={styles.menuBox}>
           <View style={styles.dateSwitchBox}>
-            <ToggleSwitch onToggle={(filter) => setDateFilter(filter as "Month" | "Week" | "Today")} labels={["Month", "Week", "Today"]} showLabels />
+            <ToggleSwitch onToggle={(filter) => setDateFilter(filter as DateFilter)} labels={dateFilters} showLabels />
           </View>
           <TouchableOpacity
             style={styles.newEventButton}

@@ -23,10 +23,11 @@ export default function UpcomingScreen({ navigation }: { navigation: any }) {
 
   async function handleFetchUpcomingEvents() {
     if (!authContext || !authContext.currentUser) return;
+    const user = authContext.currentUser.dbUser;
     setLoading(true);
     try {
       const userId = authContext.currentUser.dbUser.id;
-      const fetchedEvents = await EventModel.getEventsByParticipantId(userId);
+      const fetchedEvents = (await EventModel.getEventsByParticipantId(userId)).filter((event) => event.creator.id !== user.id);
       setEvents(fetchedEvents);
     } catch (error: any) {
       setError(error.message || "An error occurred");
