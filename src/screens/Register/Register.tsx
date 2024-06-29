@@ -10,6 +10,7 @@ import AuthService from "../../services/AuthService";
 import NumberInput from "../../components/NumberInput/NumberInput";
 import Loading from "../Loading/Loading";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
+import { shadowStyles } from "../../styles/shadows";
 
 export default function RegisterScreen({ navigation }: { navigation: any }) {
   const [user, setUser] = useState<IUser>({
@@ -81,11 +82,11 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
             <TouchableOpacity style={styles.imgButton} onPress={handleImagePicker}>
               {imageUri ? <Image source={{ uri: imageUri }} style={styles.image} /> : <Octicons name="image" style={styles.imgIcon} />}
             </TouchableOpacity>
-            <TextInput style={[styles.input, shadowStyles.shadow]} placeholder="Full Name" value={user.fullName} onChangeText={(val) => setUser({ ...user, fullName: val })} />
-            <TextInput style={[styles.input, shadowStyles.shadow]} placeholder="Email" value={user.email} onChangeText={(val) => setUser({ ...user, email: val })} autoCapitalize="none" keyboardType="email-address" />
-            <TextInput style={[styles.input, shadowStyles.shadow]} placeholder="Password" value={user.password} onChangeText={(val) => setUser({ ...user, password: val })} secureTextEntry />
-            <TextInput style={[styles.input, shadowStyles.shadow]} placeholder="City" value={user.city} onChangeText={(val) => setUser({ ...user, city: val })} />
-            <View style={[styles.ageBox, shadowStyles.shadow]}>
+            <TextInput style={[styles.input, shadowStyles.darkShadow]} placeholder="Full Name" value={user.fullName} onChangeText={(val) => setUser({ ...user, fullName: val })} />
+            <TextInput style={[styles.input, shadowStyles.darkShadow]} placeholder="Email" value={user.email} onChangeText={(val) => setUser({ ...user, email: val })} autoCapitalize="none" keyboardType="email-address" />
+            <TextInput style={[styles.input, shadowStyles.darkShadow]} placeholder="Password" value={user.password} onChangeText={(val) => setUser({ ...user, password: val })} secureTextEntry />
+            <TextInput style={[styles.input, shadowStyles.darkShadow]} placeholder="City" value={user.city} onChangeText={(val) => setUser({ ...user, city: val })} />
+            <View style={[styles.ageBox, shadowStyles.darkShadow]}>
               <Text style={styles.titleText}>Age</Text>
               <View style={styles.numberInputBox}>
                 <NumberInput min={14} max={99} initialVal={14} onChange={(val) => val && setUser({ ...user, age: val })} />
@@ -101,13 +102,3 @@ export default function RegisterScreen({ navigation }: { navigation: any }) {
       </ScrollView>
     );
 }
-
-const shadowStyles = StyleSheet.create({
-  shadow: {
-    shadowColor: "#555",
-    shadowOffset: { width: 5, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 3, // Android-specific property
-  },
-});

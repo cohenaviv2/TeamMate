@@ -33,7 +33,7 @@ const App = () => {
         const imagePermission = await getImagePickerPermission();
         setImagePermissionGranted(imagePermission);
       } catch (error) {
-        setAlertTitle("Initialization Error");
+        setAlertTitle("Oops...");
         setAlertContent("Please check your permissions and try again.");
         setAlertVisible(true);
       }

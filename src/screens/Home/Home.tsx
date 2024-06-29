@@ -2,7 +2,7 @@ import { View, TouchableOpacity, Vibration, Text } from "react-native";
 import React, { useContext, useEffect, useState, useCallback } from "react";
 import Layout from "../../components/Layout/Layout";
 import MapView, { Callout, Marker } from "react-native-maps";
-import { DateFilter, IEvent, SportType, dateFilters } from "../../common/types";
+import { DateFilter, IEvent, SportType, dateFilters, sportTypeList } from "../../common/types";
 import { FontAwesome5 } from "@expo/vector-icons";
 import SportSelect from "../../components/SportSelect/SportSelect";
 import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
@@ -117,7 +117,7 @@ export default function HomeScreen({ navigation, location }: any) {
             style={styles.newEventButton}
             onPress={() => {
               Vibration.vibrate(5);
-              navigation.navigate("New Event");
+              navigation.navigate("New Event", { defaultSportType: sportTypeFilter === "All" ? (favoriteSportType === "All" ? sportTypeList[1] : favoriteSportType) : sportTypeFilter });
             }}
           >
             <FontAwesome5 name="plus" size={20} style={styles.buttonText} />

@@ -19,6 +19,7 @@ import LoadingBox from "../../components/LoadingBox/LoadingBox";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import { launchImagePicker } from "../../utils/initialize";
 import CloudinaryService from "../../services/CloudinaryService";
+import { shadowStyles } from "../../styles/shadows";
 
 export default function ProfileScreen({ navigation }: { navigation: any }) {
   const authContext = useContext(AuthContext);
@@ -171,7 +172,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
                     {edit && formState ? (
                       <TextInput style={[styles.input, { minWidth: "90%" }]} value={formState.fullName} onChangeText={(value) => handleChange("fullName", value)} />
                     ) : (
-                      <Text style={[styles.nameText, shadowStyles.shadow]}>{dbUser.fullName}</Text>
+                      <Text style={[styles.nameText, shadowStyles.darkShadow]}>{dbUser.fullName}</Text>
                     )}
                     {edit && formState ? <TextInput style={[styles.input, { minWidth: "90%" }]} value={formState.email} onChangeText={(value) => handleChange("email", value)} /> : <Text style={styles.emailText}>{user.email}</Text>}
                   </View>
@@ -181,7 +182,7 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
                   {edit && formState ? (
                     <SportSelect vibrate theme="primary" onChange={(value) => handleChange("favoriteSport", value)} initialVal={dbUser.favoriteSport} />
                   ) : (
-                    <View style={[styles.favSportBox, shadowStyles.shadow]}>
+                    <View style={[styles.favSportBox, shadowStyles.darkShadow]}>
                       {sportTypeIconMap[dbUser.favoriteSport]}
                       <Text style={styles.labelText}>{dbUser.favoriteSport}</Text>
                     </View>
@@ -231,13 +232,3 @@ export default function ProfileScreen({ navigation }: { navigation: any }) {
     </Layout>
   );
 }
-
-const shadowStyles = StyleSheet.create({
-  shadow: {
-    shadowColor: "#555",
-    shadowOffset: { width: 5, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 3, // Android-specific property
-  },
-});

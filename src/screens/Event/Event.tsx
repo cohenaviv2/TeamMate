@@ -1,29 +1,32 @@
-import { ScrollView, Text, TouchableOpacity, View, StyleSheet, Image, TextInput } from "react-native";
-import styles from "./Event.scss";
+import { ScrollView, Text, TouchableOpacity, View, Image, TextInput } from "react-native";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { RouteProp, useFocusEffect, useRoute } from "@react-navigation/native";
-import { IEvent, IUserDetails } from "../../common/types";
-import { FontAwesome5 } from "@expo/vector-icons";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Feather } from "@expo/vector-icons";
-import Octicons from "@expo/vector-icons/Octicons";
-import { sportTypeIconMap } from "../../components/SportSelect/data";
-import { FontAwesome } from "@expo/vector-icons";
-import { FontAwesome6 } from "@expo/vector-icons";
-import MapView, { LatLng, LongPressEvent, Marker } from "react-native-maps";
-import moment from "moment";
-import UserTag from "../../components/UserTag/UserTag";
-import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../context/AuthProvider";
-import EventModel from "../../models/EventModel";
-import Spinner from "../../components/Spinner/Spinner";
-import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
+import MapView, { LatLng, LongPressEvent, Marker } from "react-native-maps";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { launchImagePicker } from "../../utils/initialize";
 import CloudinaryService from "../../services/CloudinaryService";
+import WeatherService, { TempForcast } from "../../services/WeatherService";
+import UserModel from "../../models/UserModel";
+import EventModel from "../../models/EventModel";
+import moment from "moment";
+import { setNestedProperty } from "../../utils/utils";
+import UserTag from "../../components/UserTag/UserTag";
+import Spinner from "../../components/Spinner/Spinner";
+import ToggleSwitch from "../../components/ToggleSwitch/ToggleSwitch";
 import NumberInput from "../../components/NumberInput/NumberInput";
 import LoadingBox from "../../components/LoadingBox/LoadingBox";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
-import WeatherService, { TempForcast } from "../../services/WeatherService";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { IEvent, IUserDetails } from "../../common/types";
+import Octicons from "@expo/vector-icons/Octicons";
+import { Feather } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome6 } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { sportTypeIconMap } from "../../components/SportSelect/data";
+import { shadowStyles } from "../../styles/shadows";
+import styles from "./Event.scss";
 
 type RouteParams = {
   params: {
@@ -36,11 +39,14 @@ export default function EventScreen({ navigation, location }: any) {
   const route = useRoute<RouteProp<RouteParams, "params">>();
   const { id: eventId } = route.params.event;
   const [event, setEvent] = useState<IEvent | null>(null);
+  const [creator, setCreator] = useState<IUserDetails | null>(null);
+  const [participants, setParticipants] = useState<IUserDetails[] | null>(null);
   const [numOfParticipants, setNumOfParticipants] = useState<number>(0);
   const [eventIsFull, setEventIsFull] = useState(false);
   const [isAdditionalInfo, setIsAdditionalInfo] = useState<boolean | null>(null);
   const [isMyEvent, setIsMyEvent] = useState<boolean | null>(null);
   const [isAttending, setIsAttending] = useState<boolean | null>(null);
+  const [eventIsOver, setEventIsOver] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [edit, setEdit] = useState(false);
@@ -56,14 +62,14 @@ export default function EventScreen({ navigation, location }: any) {
   const [weatherLoading, setWeatherLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const userDetails: IUserDetails = {
-    fullName: authContext?.currentUser?.dbUser.fullName || "",
-    imageUrl: authContext?.currentUser?.dbUser.imageUrl || "",
-    id: authContext?.currentUser?.dbUser.id || "",
+    fullName: authContext!.currentUser!.dbUser.fullName,
+    imageUrl: authContext!.currentUser!.dbUser.imageUrl,
+    id: authContext!.currentUser!.dbUser.id,
   };
 
   useEffect(() => {
     async function fetchWeather() {
-      if (event) {
+      if (event && !eventIsOver) {
         setWeatherLoading(true);
         try {
           const weatherData = await WeatherService.getTempForcast(event.location.latitude, event.location.longitude);
@@ -76,23 +82,37 @@ export default function EventScreen({ navigation, location }: any) {
       }
     }
     fetchWeather();
-  }, [event]);
+  }, [event,eventIsOver]);
+
+  async function handleFetchEvent() {
+    setLoading(true);
+    try {
+      const eventDetails = await EventModel.getEventById(eventId);
+      // Fetch creator details
+      const { id, fullName, imageUrl } = await UserModel.getUserById(eventDetails.creator.id);
+      setCreator({ id, fullName, imageUrl });
+      // Fetch participants details concurrently
+      const participantIds = Object.keys(eventDetails.participants || {});
+      const participants = await UserModel.getUsersByIds(participantIds);
+      setParticipants(participants);
+      // Update event details
+      updateEventDetails(eventDetails);
+    } catch (error: any) {
+      setError(error.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function handleFetchEvent() {
-      setLoading(true);
-      try {
-        const eventDetails = await EventModel.getEventById(eventId);
-        if (eventDetails) updateEventDetails(eventDetails);
-      } catch (error: any) {
-        console.log(error);
-        setError(error.message || "An error occurred");
-      } finally {
-        setLoading(false);
-      }
-    }
     handleFetchEvent();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      handleFetchEvent();
+    }, [])
+  );
 
   function updateEventDetails(eventDetails: IEvent) {
     setEvent(eventDetails);
@@ -104,6 +124,9 @@ export default function EventScreen({ navigation, location }: any) {
     setIsAdditionalInfo(hasAdditionalFields);
     setIsMyEvent(userDetails.id === eventDetails.creator.id);
     setIsAttending(eventDetails.participants && !!eventDetails.participants[userDetails.id]);
+    const eventDateTime = new Date(eventDetails.dateTime);
+    const currentDateTime = new Date();
+    setEventIsOver(eventDateTime < currentDateTime);
   }
 
   async function handleDeleteEvent() {
@@ -114,7 +137,7 @@ export default function EventScreen({ navigation, location }: any) {
       setTimeout(() => {
         setSuccess(false);
         setLoading(false);
-        navigation.navigate("Home");
+        navigation.goBack();
       }, 700);
     } catch (error: any) {
       setError(error.message || "An error occurred");
@@ -211,14 +234,6 @@ export default function EventScreen({ navigation, location }: any) {
     }
   };
 
-  const setNestedProperty = (obj: any, path: string, value: any) => {
-    const keys = path.split(".");
-    const lastKey = keys.pop();
-    const lastObj = keys.reduce((acc, key) => (acc[key] = acc[key] || {}), obj);
-    if (lastKey) lastObj[lastKey] = value;
-    return { ...obj };
-  };
-
   const handleChange = (field: string, value: any) => {
     // Omit locationType if value is "None"
     if (field === "locationType" && value === "None") {
@@ -271,10 +286,7 @@ export default function EventScreen({ navigation, location }: any) {
   };
 
   const handleSubmitUpdateEvent = async () => {
-    if (!validate() || !formState) {
-      return;
-    }
-
+    if (!validate() || !formState) return;
     setLoading(true);
     try {
       if (imageUri) {
@@ -285,7 +297,6 @@ export default function EventScreen({ navigation, location }: any) {
         ...formState,
         imageUrl: imageUri ? imageUri : formState.imageUrl,
       };
-
       await EventModel.updateEvent(eventId, updatedEvent);
       setEdit(false);
       await handleUpdateEvent();
@@ -350,19 +361,17 @@ export default function EventScreen({ navigation, location }: any) {
                 </TouchableOpacity>
               </View>
             )}
-            <View style={[styles.fieldBox, shadowStyles.shadow]}>
+            <View style={[styles.fieldBox, shadowStyles.darkShadow]}>
               <View style={edit && formState ? styles.titleBox : styles.eventTitleBox}>
                 {edit && formState ? <TextInput style={styles.input} value={formState.title} onChangeText={(value) => handleChange("title", value)} /> : <Text style={styles.eventTitleText}>{event.title}</Text>}
               </View>
               <View style={styles.userBox}>
-                <View style={[styles.userTagBox, shadowStyles.shadow]}>
-                  <UserTag user={{ id: event.creator.id, fullName: event.creator.fullName, imageUrl: event.creator.imageUrl }} />
-                </View>
+                <View style={[styles.userTagBox, shadowStyles.darkShadow]}>{creator && <UserTag user={creator} />}</View>
                 {sportTypeIconMap[event.sportType]}
                 <Text style={styles.titleText}>{event.sportType}</Text>
               </View>
             </View>
-            <View style={[styles.fieldBox, shadowStyles.shadow]}>
+            <View style={[styles.fieldBox, shadowStyles.darkShadow]}>
               <View style={styles.titleBox}>
                 <FontAwesome5 name="map-marker-alt" style={styles.markerIcon} />
                 {edit && formState ? (
@@ -391,7 +400,7 @@ export default function EventScreen({ navigation, location }: any) {
               </View>
             </View>
 
-            <View style={[styles.fieldBox, shadowStyles.shadow]}>
+            <View style={[styles.fieldBox, shadowStyles.darkShadow]}>
               <View style={styles.titleBox}>
                 <Ionicons name="calendar-outline" style={styles.dateIcon} />
                 <Text style={styles.titleText}>Date & Time</Text>
@@ -407,34 +416,37 @@ export default function EventScreen({ navigation, location }: any) {
                   <Text style={[styles.dateText, { fontSize: 24 }]}>{edit && formState ? new Date(formState.dateTime).toTimeString().substring(0, 5) : new Date(event.dateTime).toTimeString().substring(0, 5)}</Text>
                 </TouchableOpacity>
                 {showTimePicker && <DateTimePicker value={edit && formState ? new Date(formState.dateTime) : new Date(event.dateTime)} mode="time" display="inline" onChange={handleTimeChange} />}
-                <View style={styles.weatherBox}>
-                  {weatherLoading ? (
-                    <View style={styles.weatherInfoBox}>
-                      <Spinner size="m" />
-                      <Text style={styles.weatherErrorText}>Loading Weather</Text>
-                    </View>
-                  ) : weatherError ? (
-                    <View style={styles.weatherInfoBox}>
-                      <Text style={styles.weatherErrorText}>{weatherError}</Text>
-                    </View>
-                  ) : (
-                    weather &&
-                    Object.keys(weather).map((date, index) => (
-                      <View style={styles.tempBox} key={index}>
-                        <View style={styles.weatherDateBox}>
-                          <Text style={[styles.dateText, { fontSize: 16 }]}>{moment(new Date(date)).format("D")}</Text>
-                        </View>
-                        <Image source={getWeatherIconPath(weather[date].icon)} style={styles.weatherImage} />
-                        <Text style={[styles.weatherText, { fontSize: 16 }]}>{weather[date].temperature.toString() + "°"}</Text>
+
+                {!eventIsOver && (
+                  <View style={styles.weatherBox}>
+                    {weatherLoading ? (
+                      <View style={styles.weatherInfoBox}>
+                        <Spinner size="m" />
+                        <Text style={styles.weatherErrorText}>Loading Weather</Text>
                       </View>
-                    ))
-                  )}
-                </View>
+                    ) : weatherError ? (
+                      <View style={styles.weatherInfoBox}>
+                        <Text style={styles.weatherErrorText}>{weatherError}</Text>
+                      </View>
+                    ) : (
+                      weather &&
+                      Object.keys(weather).map((date, index) => (
+                        <View style={moment(date).isSame(event.dateTime, "day") ? styles.selectedTempBox : styles.tempBox} key={index}>
+                          <View style={styles.weatherDateBox}>
+                            <Text style={[styles.dateText, { fontSize: 16 }]}>{moment(new Date(date)).format("D")}</Text>
+                          </View>
+                          <Image source={getWeatherIconPath(weather[date].icon)} style={styles.weatherImage} />
+                          <Text style={[styles.weatherText, { fontSize: 16 }]}>{weather[date].temperature.toString() + "°"}</Text>
+                        </View>
+                      ))
+                    )}
+                  </View>
+                )}
               </View>
             </View>
 
             {!edit && (
-              <View style={[!isAdditionalInfo && !isMyEvent ? styles.endFieldBox : styles.fieldBox, shadowStyles.shadow]}>
+              <View style={[!isAdditionalInfo && !isMyEvent ? styles.endFieldBox : styles.fieldBox, shadowStyles.darkShadow]}>
                 <View style={styles.titleBox}>
                   <Ionicons name="people-sharp" style={styles.participantsIcon} />
                   <Text style={styles.titleText}>Participants</Text>
@@ -447,22 +459,24 @@ export default function EventScreen({ navigation, location }: any) {
                     </View>
                     <Text style={[styles.timeText, { fontSize: 14 }]}>Participants</Text>
                   </View>
-                  <View style={styles.participantsListBox}>
-                    {numOfParticipants > 0 ? (
-                      Object.values(event.participants).map((participant, index) => (
-                        <View style={[styles.participantTagBox, shadowStyles.shadow]} key={index}>
-                          <UserTag user={{ fullName: participant.user.fullName, id: participant.user.id, imageUrl: participant.user.imageUrl }} />
-                        </View>
-                      ))
-                    ) : (
-                      <Text style={[styles.noParticipantsText, { textAlignVertical: "center" }]}>{isMyEvent ? "No one attended yet" : "Be the first to attend!"}</Text>
-                    )}
-                  </View>
+                  {participants && (
+                    <View style={styles.participantsListBox}>
+                      {numOfParticipants > 0 ? (
+                        participants.map((participant, index) => (
+                          <View style={[styles.participantTagBox, shadowStyles.darkShadow]} key={index}>
+                            <UserTag user={{ fullName: participant.fullName, id: participant.id, imageUrl: participant.imageUrl }} />
+                          </View>
+                        ))
+                      ) : (
+                        <Text style={[styles.noParticipantsText, { textAlignVertical: "center" }]}>{isMyEvent ? "No one attended yet" : "Be the first to attend!"}</Text>
+                      )}
+                    </View>
+                  )}
                 </View>
               </View>
             )}
             {isAdditionalInfo && (
-              <View style={[isMyEvent ? styles.fieldBox : styles.endFieldBox, shadowStyles.shadow]}>
+              <View style={[isMyEvent ? styles.fieldBox : styles.endFieldBox, shadowStyles.darkShadow]}>
                 <View style={styles.titleBox}>
                   <Feather name="info" style={styles.infoIcon} />
                   <Text style={styles.titleText}>Details</Text>
@@ -530,10 +544,12 @@ export default function EventScreen({ navigation, location }: any) {
                   </TouchableOpacity>
                 ) : (
                   <>
-                    <TouchableOpacity style={styles.editButton} onPress={handleEditButtonPress}>
-                      <FontAwesome6 name="edit" style={styles.buttonIcon} />
-                      <Text style={styles.buttonText}>Edit Event</Text>
-                    </TouchableOpacity>
+                    {!eventIsOver && (
+                      <TouchableOpacity style={styles.editButton} onPress={handleEditButtonPress}>
+                        <FontAwesome6 name="edit" style={styles.buttonIcon} />
+                        <Text style={styles.buttonText}>Edit Event</Text>
+                      </TouchableOpacity>
+                    )}
                     <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteEvent}>
                       <FontAwesome6 name="trash-can" style={styles.buttonIcon} />
                       <Text style={styles.buttonText}>Delete Event</Text>
@@ -544,7 +560,7 @@ export default function EventScreen({ navigation, location }: any) {
             )}
           </ScrollView>
         )}
-        {!isMyEvent &&
+        {/* {!isMyEvent &&
           (!isAttending && !eventIsFull ? (
             <TouchableOpacity style={styles.attendButton} onPress={handleAttendEvent}>
               <FontAwesome name="check" style={styles.attendButtonIcon} />
@@ -553,24 +569,46 @@ export default function EventScreen({ navigation, location }: any) {
           ) : (
             <View style={styles.unattendBox}>
               <Feather name="info" style={styles.unattendInfoIcon} />
-              <Text style={styles.smallTitleText}>{eventIsFull ? "Event is full" : "You are attending to this event"}</Text>
-              {isAttending && (
+              <Text style={styles.smallTitleText}>{eventIsFull ? "Event is full" :eventIsOver? "Event is over": "You are attending to this event"}</Text>
+              {isAttending && !eventIsOver && (
                 <TouchableOpacity style={styles.unattendButton} onPress={handleUnattendEvent}>
                   <Text style={styles.buttonText}>Unattend</Text>
                 </TouchableOpacity>
               )}
             </View>
-          ))}
+          ))} */}
+        {eventIsOver ? (
+          <View style={styles.eventOverBox}>
+            <Feather name="info" style={styles.eventOverIcon} />
+            <Text style={styles.eventOverText}>{"Event is over"}</Text>
+          </View>
+        ) : eventIsFull ? (
+          <View style={styles.unattendBox}>
+            <Feather name="info" style={styles.unattendInfoIcon} />
+            <Text style={styles.smallTitleText}>{!isMyEvent && isAttending ? "You are attending to this event" : "Event is full"}</Text>
+            {isAttending && !isMyEvent && (
+              <TouchableOpacity style={styles.unattendButton} onPress={handleUnattendEvent}>
+                <Text style={styles.buttonText}>Unattend</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        ) : !isMyEvent && !isAttending && !eventIsFull ? (
+          <TouchableOpacity style={styles.attendButton} onPress={handleAttendEvent}>
+            <FontAwesome name="check" style={styles.attendButtonIcon} />
+            <Text style={styles.buttonText}>Attend Event</Text>
+          </TouchableOpacity>
+        ) : (
+          !isMyEvent &&
+          isAttending && (
+            <View style={styles.unattendBox}>
+              <Feather name="info" style={styles.unattendInfoIcon} />
+              <Text style={styles.smallTitleText}>{"You are attending to this event"}</Text>
+              <TouchableOpacity style={styles.unattendButton} onPress={handleUnattendEvent}>
+                <Text style={styles.buttonText}>Unattend</Text>
+              </TouchableOpacity>
+            </View>
+          )
+        )}
       </View>
     );
 }
-
-const shadowStyles = StyleSheet.create({
-  shadow: {
-    shadowColor: "#555",
-    shadowOffset: { width: 5, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 3, // Android-specific property
-  },
-});

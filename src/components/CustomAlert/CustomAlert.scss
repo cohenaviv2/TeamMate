@@ -10,7 +10,8 @@
 .alertBox {
   justify-content: center;
   align-items: center;
-  width: 320px;
+  width: 80%;
+  height: 200px;
   padding: 20px;
   background-color: $primary;
   border: 2px solid $primary-dark;
@@ -18,16 +19,16 @@
 }
 
 .title {
-  font-size: 20px;
+  font-size: 22px;
   width: 100%;
   font-family: "Lato-Bold";
-  color: $text;
+  color: $secondary;
   text-align: center;
   margin-bottom: 10px;
 }
 
 .content {
-  font-family: "Lato";
+  font-family: "Lato-Bold";
   width: 90%;
   min-height: 3rem;
   color: $text;

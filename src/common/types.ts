@@ -9,9 +9,9 @@ export interface IUser {
   id: string;
 }
 
-export type SportType = "All" | "Basketball" | "Baseball" | "Tennis" | "Football" | "Soccer" | "Hockey" | "Volleyball" | "Golf" | "Cycling";
+export type SportType = "All" | "Basketball" | "Baseball" | "Tennis" | "Football" | "Soccer" | "Hockey" | "Volleyball" | "Golf" | "Cycling" | "Running" | "Swimming" | "Ping Pong" | "Snowboarding" | "Surfing";
 
-export const sportTypeList: SportType[] = ["All", "Basketball", "Baseball", "Tennis", "Football", "Soccer", "Hockey", "Volleyball", "Golf", "Cycling"];
+export const sportTypeList: SportType[] = ["All", "Basketball", "Baseball", "Tennis", "Football", "Soccer", "Hockey", "Volleyball", "Golf", "Cycling", "Running", "Swimming", "Ping Pong", "Snowboarding", "Surfing"];
 
 export interface IEvent {
   sportType: SportType;

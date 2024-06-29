@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
+import { AuthContext } from "../../../context/AuthProvider";
 import React, { useContext } from "react";
 import { IEvent } from "../../../common/types";
 import { sportTypeIconMap } from "../../SportSelect/data";
@@ -7,7 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import moment from "moment";
 import styles from "./EventListItem.scss";
-import { AuthContext } from "../../../context/AuthProvider";
+import { shadowStyles } from "../../../styles/shadows";
 
 interface EventListItemProps {
   event: IEvent;
@@ -56,20 +57,3 @@ export default function EventListItem({ event, onEventPress }: EventListItemProp
     </TouchableOpacity>
   );
 }
-
-const shadowStyles = StyleSheet.create({
-  shadow: {
-    shadowColor: "#555",
-    shadowOffset: { width: 5, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 1, // Android-specific property
-  },
-  darkShadow: {
-    shadowColor: "#555",
-    shadowOffset: { width: 5, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 3, // Android-specific property
-  },
-});

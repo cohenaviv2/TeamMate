@@ -1,5 +1,6 @@
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { Ionicons } from "@expo/vector-icons";
+import { MaterialIcons } from '@expo/vector-icons';
 import styles from "./SportSelect.scss"
 
 export const sportTypeIconMap = {
@@ -13,4 +14,10 @@ export const sportTypeIconMap = {
   Volleyball: <FontAwesome6 name="volleyball" style={styles.volleyballIcon} />,
   Golf: <FontAwesome6 name="golf-ball-tee" style={styles.golfIcon} />,
   Cycling: <FontAwesome6 name="person-biking" style={styles.bicycleIcon} />,
+  Running: <FontAwesome6 name="person-running" style={styles.runningIcon} />,
+  Swimming: <FontAwesome6 name="person-swimming" style={styles.swimmingIcon} />,
+  "Ping Pong": <FontAwesome6 name="table-tennis-paddle-ball" style={styles.pingPongIcon} />,
+  Skating: <MaterialIcons name="skateboarding" style={styles.skateboardingIcon} />,
+  Snowboarding: <FontAwesome6 name="person-snowboarding" style={styles.snowboardingIcon} />,
+  Surfing: <MaterialIcons name="surfing" style={styles.surfingIcon} />,
 };

@@ -22,15 +22,12 @@ class EventModel {
     }
   }
 
-  async getEventById(id: string): Promise<IEvent | null> {
+  async getEventById(id: string): Promise<IEvent> {
     try {
       const eventRef = ref(this.db, `${this.path}/${id}`);
       const snapshot = await get(eventRef);
-      if (snapshot.exists()) {
-        return snapshot.val() as IEvent;
-      } else {
-        return null;
-      }
+      if (!snapshot.exists()) throw new Error("Event not found");
+      return snapshot.val() as IEvent;
     } catch (error) {
       console.log("Error fetching event:", error);
       throw error;
@@ -91,41 +88,42 @@ class EventModel {
     }
   }
 
-async getFilteredEvents(sportTypeFilter: SportType, dateFilter: DateFilter): Promise<IEvent[]> {
-  try {
-    let startDate = moment().startOf("day");
-    let endDate = moment().endOf("day");
+  async getFilteredEvents(sportTypeFilter: SportType, dateFilter: DateFilter): Promise<IEvent[]> {
+    try {
+      let startDate = moment().startOf("day");
+      let endDate = moment().endOf("day");
+      const now = moment();
 
-    if (dateFilter === "Week") {
-      endDate = moment().add(7, "days").endOf("day");
-    } else if (dateFilter === "Month") {
-      endDate = moment().add(30, "days").endOf("day");
-    }
-
-    let eventsQuery;
-    if (sportTypeFilter === "All") {
-      eventsQuery = query(ref(this.db, this.path));
-    } else {
-      eventsQuery = query(ref(this.db, this.path), orderByChild("sportType"), startAt(sportTypeFilter), endAt(sportTypeFilter));
-    }
-
-    const snapshot = await get(eventsQuery);
-    const events: IEvent[] = [];
-
-    snapshot.forEach((childSnapshot) => {
-      const event = childSnapshot.val() as IEvent;
-      const eventDate = moment(event.dateTime);
-      if (eventDate.isBetween(startDate, endDate, undefined, "[]")) {
-        events.push(event);
+      if (dateFilter === "Week") {
+        endDate = moment().add(7, "days").endOf("day");
+      } else if (dateFilter === "Month") {
+        endDate = moment().add(30, "days").endOf("day");
       }
-    });
 
-    return events.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
-  } catch (error) {
-    console.error("Error fetching filtered events:", error);
-    throw error;
+      let eventsQuery;
+      if (sportTypeFilter === "All") {
+        eventsQuery = query(ref(this.db, this.path));
+      } else {
+        eventsQuery = query(ref(this.db, this.path), orderByChild("sportType"), startAt(sportTypeFilter), endAt(sportTypeFilter));
+      }
+
+      const snapshot = await get(eventsQuery);
+      const events: IEvent[] = [];
+
+      snapshot.forEach((childSnapshot) => {
+        const event = childSnapshot.val() as IEvent;
+        const eventDate = moment(event.dateTime);
+        if (eventDate.isBetween(startDate, endDate, undefined, "[]") && eventDate.isAfter(now)) {
+          events.push(event);
+        }
+      });
+
+      return events.sort((a, b) => new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime());
+    } catch (error) {
+      console.error("Error fetching filtered events:", error);
+      throw error;
+    }
   }
-}
 
   async getEventsByCreatorId(creatorId: string): Promise<IEvent[]> {
     try {

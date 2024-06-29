@@ -3,7 +3,7 @@ import Layout from "../../components/Layout/Layout";
 import styles from "./MyEvents.scss";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthProvider";
-import { IEvent } from "../../common/types";
+import { IEvent, sportTypeList } from "../../common/types";
 import ScrollableList from "../../components/List/List";
 import EventListItem from "../../components/List/EventListItem/EventListItem";
 import EventModel from "../../models/EventModel";
@@ -16,6 +16,7 @@ import CustomAlert from "../../components/CustomAlert/CustomAlert";
 
 export default function MyEventsScreen({ navigation, location }: any) {
   const authContext = useContext(AuthContext);
+  const { favoriteSport } = authContext!.currentUser!.dbUser;
   const [events, setEvents] = useState<IEvent[] | null>(null);
   const [showList, setShowList] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -112,7 +113,7 @@ export default function MyEventsScreen({ navigation, location }: any) {
             style={styles.newEventButton}
             onPress={() => {
               Vibration.vibrate(5);
-              navigation.navigate("My New Event");
+              navigation.navigate("My New Event", { defaultSportType : favoriteSport === "All" ? sportTypeList[1] : favoriteSport});
             }}
           >
             <FontAwesome5 name="plus" size={20} style={styles.buttonText} />

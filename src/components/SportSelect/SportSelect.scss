@@ -12,7 +12,7 @@ $background-light: #e6e6e6;
 .sportBox {
   @extend .hbox;
   gap: 0.2rem;
-  width: 80%;
+  width: 85%;
   justify-content: center;
   height: 100%;
   background-color: $text;
@@ -90,13 +90,38 @@ $background-light: #e6e6e6;
 }
 .volleyballIcon {
   @extend .sportIcon;
-  color: rgb(255, 217, 0);
+  color: rgb(233, 200, 17);
 }
 .golfIcon {
   @extend .sportIcon;
-  color: rgb(223, 251, 253);
+  color: rgb(207, 252, 255);
 }
 .bicycleIcon {
   @extend .sportIcon;
+  color: rgb(136, 228, 32);
+}
+.runningIcon {
+  @extend .sportIcon;
+  color: rgb(192, 27, 123);
+}
+.swimmingIcon {
+  @extend .sportIcon;
   color: rgb(136, 210, 253);
+}
+.pingPongIcon {
+  @extend .sportIcon;
+  font-size: 22px;
+  color: rgb(231, 43, 29);
+}
+.skateboardingIcon {
+  @extend .sportIcon;
+  color: rgb(94, 38, 139);
+}
+.snowboardingIcon {
+  @extend .sportIcon;
+  color: rgb(101, 142, 167);
+}
+.surfingIcon {
+  @extend .sportIcon;
+  color: rgb(10, 161, 248);
 }

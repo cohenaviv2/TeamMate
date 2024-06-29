@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, Alert, Image } from "react-native";
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Image } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import EventModel from "../../models/EventModel";
-import { IEvent } from "../../common/types";
+import { IEvent, SportType } from "../../common/types";
 import SportSelect from "../../components/SportSelect/SportSelect";
 import { AuthContext } from "../../context/AuthProvider";
 import Loading from "../Loading/Loading";
@@ -20,8 +20,19 @@ import Spinner from "../../components/Spinner/Spinner";
 import WeatherService, { TempForcast } from "../../services/WeatherService";
 import LoadingBox from "../../components/LoadingBox/LoadingBox";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
+import { shadowStyles } from "../../styles/shadows";
+import { setNestedProperty } from "../../utils/utils";
+import { RouteProp, useRoute } from "@react-navigation/native";
+
+type RouteParams = {
+  params: {
+    defaultSportType: SportType;
+  };
+};
 
 const NewEventScreen = ({ navigation, location }: any) => {
+  const route = useRoute<RouteProp<RouteParams, "params">>();
+  const defaultSportType = route.params.defaultSportType;
   const authContext = useContext(AuthContext);
   if (!authContext || !authContext.currentUser) {
     return <Loading spinnerSize="l" />;
@@ -30,7 +41,7 @@ const NewEventScreen = ({ navigation, location }: any) => {
   const [formState, setFormState] = useState<IEvent>({
     title: "",
     dateTime: new Date().toISOString(),
-    sportType: "Basketball",
+    sportType: defaultSportType,
     location: {
       name: "",
       latitude: location.coords.latitude,
@@ -56,8 +67,6 @@ const NewEventScreen = ({ navigation, location }: any) => {
   const [weather, setWeather] = useState<TempForcast | null>(null);
   const [weatherError, setWeatherError] = useState<string | null>(null);
   const [weatherLoading, setWeatherLoading] = useState(false);
-
-  // useEffect(()=>console.log(formState),[formState])
 
   useEffect(() => {
     async function fetchWeather() {
@@ -103,14 +112,6 @@ const NewEventScreen = ({ navigation, location }: any) => {
   const handleImagePicker = async () => {
     const uri = await launchImagePicker([5, 4]);
     setImageUri(uri);
-  };
-
-  const setNestedProperty = (obj: any, path: string, value: any) => {
-    const keys = path.split(".");
-    const lastKey = keys.pop();
-    const lastObj = keys.reduce((acc, key) => (acc[key] = acc[key] || {}), obj);
-    if (lastKey) lastObj[lastKey] = value;
-    return { ...obj };
   };
 
   const handleChange = (field: string, value: any) => {
@@ -179,14 +180,13 @@ const NewEventScreen = ({ navigation, location }: any) => {
       }
       const newEvent: IEvent = {
         ...formState,
-        participants:{
-          [user.id]:{user},
+        participants: {
+          [user.id]: { user },
         },
         imageUrl: imageUri ? imageUri : "",
         createdAt: new Date().toISOString(),
       };
 
-      console.log(newEvent)
       await EventModel.createEvent(newEvent);
       setSuccess(true);
       setTimeout(() => {
@@ -234,16 +234,16 @@ const NewEventScreen = ({ navigation, location }: any) => {
             },
           ]}
         />
-        <View style={[styles.fieldBox, shadowStyles.shadow]}>
+        <View style={[styles.fieldBox, shadowStyles.darkShadow]}>
           <View style={styles.sportTypeBox}>
             <Text style={styles.titleText}>New Event</Text>
-            <SportSelect excludeAllOption theme="primary" onChange={(value) => handleChange("sportType", value)} vibrate />
+            <SportSelect excludeAllOption initialVal={defaultSportType && defaultSportType} theme="primary" onChange={(value) => handleChange("sportType", value)} vibrate />
           </View>
           <TextInput placeholder="Event Title..." style={errors.title !== undefined ? styles.errorInput : styles.input} value={formState.title} onChangeText={(value) => handleChange("title", value)} />
           {/* {errors.title !== undefined && <Text style={styles.error}>{errors.title}</Text>} */}
         </View>
 
-        <View style={[styles.fieldBox, shadowStyles.shadow]}>
+        <View style={[styles.fieldBox, shadowStyles.darkShadow]}>
           <View style={styles.titleBox}>
             <FontAwesome5 name="map-marker-alt" style={styles.markerIcon} />
             <Text style={styles.titleText}>Loaction</Text>
@@ -276,7 +276,7 @@ const NewEventScreen = ({ navigation, location }: any) => {
           {/* {errors.locationName !== undefined && <Text style={styles.error}>{errors.locationName}</Text>} */}
         </View>
 
-        <View style={[styles.fieldBox, shadowStyles.shadow]}>
+        <View style={[styles.fieldBox, shadowStyles.darkShadow]}>
           <View style={styles.titleBox}>
             <Ionicons name="calendar" style={styles.dateIcon} />
             <Text style={styles.titleText}>Date & Time</Text>
@@ -320,7 +320,7 @@ const NewEventScreen = ({ navigation, location }: any) => {
 
         <Text style={[styles.titleText, { margin: 16, color: "grey" }]}>Optional</Text>
 
-        <View style={[styles.fieldBox, shadowStyles.shadow]}>
+        <View style={[styles.fieldBox, shadowStyles.darkShadow]}>
           <View style={styles.titleBox}>
             <Ionicons name="people-sharp" style={styles.participantsIcon} />
             <Text style={styles.titleText}>Event Details</Text>
@@ -375,15 +375,5 @@ const NewEventScreen = ({ navigation, location }: any) => {
       </ScrollView>
     );
 };
-
-const shadowStyles = StyleSheet.create({
-  shadow: {
-    shadowColor: "#555",
-    shadowOffset: { width: 5, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 3, // Android-specific property
-  },
-});
 
 export default NewEventScreen;
